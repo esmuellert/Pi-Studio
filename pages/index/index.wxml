@@ -1,0 +1,56 @@
+<mp-toptips msg="{{error}}" type="error" show="{{error}}"></mp-toptips>
+<view class="page" xmlns:wx="http://www.w3.org/1999/xhtml">
+
+  <view class="page__bd">
+    <mp-form id="form" rules="{{rules}}" models="{{formData}}">
+      <view class="weui-cells__title">拍摄类型</view>
+      <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_select">
+          <view class="weui-cell__bd">
+            <picker bindchange="bindTypeChange" value="{{typeIndex}}" range="{{type}}">
+              <view class="weui-select">{{type[typeIndex]}}</view>
+            </picker>
+          </view>
+        </view>
+      </view>
+
+      <mp-cells title="预约拍摄" footer="底部说明文字底部说明文字">
+
+        <mp-cell title="拍摄类型">
+          <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_select">
+              <view class="weui-cell__bd">
+                <picker bindchange="bindTypeChange" value="{{typeIndex}}" range="{{type}}">
+                  <view class="weui-select">{{type[typeIndex]}}</view>
+                </picker>
+              </view>
+            </view>
+          </view>
+        </mp-cell>
+
+        <mp-cell prop="qq" title="qq" ext-class="">
+          <input bindinput="formInputChange" data-field="qq" class="weui-input" placeholder="请输入qq" />
+        </mp-cell>
+        <mp-cell prop="mobile" title="手机号" ext-class="">
+          <input bindinput="formInputChange" data-field="mobile" class="weui-input" placeholder="请输入手机号" />
+        </mp-cell>
+        <mp-cell prop="date" title="时间" ext-class="">
+          <picker data-field="date" mode="date" value="{{date}}" start="{{date}}" end="2020-12-31"
+            bindchange="bindDateChange">
+            <view class="weui-input">{{date}}</view>
+          </picker>
+        </mp-cell>
+      </mp-cells>
+
+    </mp-form>
+
+
+
+
+
+
+    <view class="weui-btn-area">
+      <button class="weui-btn" type="primary" bindtap="submitForm">确定</button>
+    </view>
+  </view>
+</view>

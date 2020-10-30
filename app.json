@@ -1,0 +1,38 @@
+{
+  "pages":[
+    "pages/index/index",
+    "pages/logs/logs",
+    "pages/my/my"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Pi Studio",
+    "navigationBarTextStyle":"black"
+  },
+  "tabBar": {
+    "color": "#000000",
+    "selectedColor": "#1AAD19",
+    "backgroundColor": "#fff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/images/首页.png",
+        "selectedIconPath": "/images/首页Selected.png"
+    }, 
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "/images/我的.png",
+        "selectedIconPath": "/images/我的Selected.png"
+    }
+  ]
+  },
+  "style": "v2",    
+  "useExtendedLib": {
+    "kbone": true,
+    "weui": true
+  },
+  "sitemapLocation": "sitemap.json"
+}
