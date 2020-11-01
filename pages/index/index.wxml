@@ -1,56 +1,93 @@
-<mp-toptips msg="{{error}}" type="error" show="{{error}}"></mp-toptips>
-<view class="page" xmlns:wx="http://www.w3.org/1999/xhtml">
+<!--pages/index/index.wxml-->
+<view class="page" data-weui-theme="">
+  <view class="weui-form">
 
-  <view class="page__bd">
-    <mp-form id="form" rules="{{rules}}" models="{{formData}}">
-      <view class="weui-cells__title">拍摄类型</view>
-      <view class="weui-cells weui-cells_after-title">
-        <view class="weui-cell weui-cell_select">
-          <view class="weui-cell__bd">
-            <picker bindchange="bindTypeChange" value="{{typeIndex}}" range="{{type}}">
-              <view class="weui-select">{{type[typeIndex]}}</view>
-            </picker>
+    <view class="weui-form__text-area">
+      <h2 class="weui-form__title">预约拍摄</h2>
+      <view class="weui-form__desc">请认真填写下面的信息，完成预约：</view>
+    </view>
+
+    <view class="weui-form__control-area">
+      <view class="weui-cells__group weui-cells__group_form">
+        <!-- <view class="weui-cells__title">标题</view> -->
+        <view class="weui-cells weui-cell_form">
+
+          <view class="weui-cell weui-cell_active">
+            <view class="weui-cell__hd"><label class="weui-label">联系电话</label></view>
+            <view class="weui-cell__bd">
+              <input data-id="mobile" class="weui-input" placeholder="填写联系电话"
+                placeholder-class="weui-input__placeholder" type="number" bindinput="onInput" value="{{mobile}}" />
+            </view>
+          </view>
+
+          <view class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after">
+            <view class="weui-cell__hd">
+              <label class="weui-label">拍摄类型</label>
+            </view>
+            <view class="weui-cell__bd">
+              <picker bindchange="onTypeChange" range="{{type}}" value="{{typeIndex}}">
+                <view class="weui-select">{{type[typeIndex]}}</view>
+              </picker>
+            </view>
+          </view>
+
+          <view class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after weui-flex">
+            <view class="weui-cell__hd">
+              <label class="weui-label">时间</label>
+            </view>
+            <view class="weui-cell__bd weui-flex__item">
+              <picker mode="date" bindchange="onDateChange" start="{{startDate}}" end="{{endDate}}">
+                <view class="weui-select">{{date}}</view>
+              </picker>
+            </view>
+            <view class="weui-cell__bd weui-flex__item">
+              <picker bindchange="onTimeChange" range="{{time}}" value="{{timeIndex}}">
+                <view class="weui-select">{{time[timeIndex]}}</view>
+              </picker>
+            </view>
+          </view>
+
+          <view class="weui-cell weui-cell_active weui-cell_select weui-cell_select-after weui-flex"
+            wx:for="{{schedule}}" wx:key="length">
+            <view class="weui-cell__hd">
+              <label bindtap="onDeleteSchedule" class="weui-btn weui-btn_warn weui-btn_mini"
+                style="margin-right:21.69px" data-id="{{index}}">删除</label>
+            </view>
+            <view class="weui-cell__bd weui-flex__item">
+              <picker mode="date" bindchange="onScheduleDateChange" start="{{startDate}}" end="{{endDate}}"
+                data-id="{{index}}">
+                <view class="weui-select">{{item.date}}</view>
+              </picker>
+            </view>
+            <view class="weui-cell__bd weui-flex__item">
+              <picker bindchange="onScheduleTimeChange" range="{{time}}" value="{{item.timeIndex}}" data-id="{{index}}">
+                <view class="weui-select">{{time[item.timeIndex]}}</view>
+              </picker>
+            </view>
+          </view>
+
+          <a class="weui-cell weui-cell_active weui-cell_link">
+            <view bindtap="onAddSchedule" class="weui-cell__bd">添加更多时间</view>
+          </a>
+
+        </view>
+      </view>
+      <view class="weui-cells__group weui-cells__group_form">
+        <view class="weui-cells__title">特殊要求</view>
+        <view class="weui-cells weui-cells_form">
+          <view class="weui-cell ">
+            <view class="weui-cell__bd">
+              <textarea class="weui-textarea" placeholder="请简单描述你对拍摄的一些特殊要求" auto-height value="{{notes}}" maxlength="200" bindinput="onInput" data-id="notes"></textarea>
+              <view class="weui-textarea-counter"><text>0</text>/200</view>
+            </view>
           </view>
         </view>
       </view>
-
-      <mp-cells title="预约拍摄" footer="底部说明文字底部说明文字">
-
-        <mp-cell title="拍摄类型">
-          <view class="weui-cells weui-cells_after-title">
-            <view class="weui-cell weui-cell_select">
-              <view class="weui-cell__bd">
-                <picker bindchange="bindTypeChange" value="{{typeIndex}}" range="{{type}}">
-                  <view class="weui-select">{{type[typeIndex]}}</view>
-                </picker>
-              </view>
-            </view>
-          </view>
-        </mp-cell>
-
-        <mp-cell prop="qq" title="qq" ext-class="">
-          <input bindinput="formInputChange" data-field="qq" class="weui-input" placeholder="请输入qq" />
-        </mp-cell>
-        <mp-cell prop="mobile" title="手机号" ext-class="">
-          <input bindinput="formInputChange" data-field="mobile" class="weui-input" placeholder="请输入手机号" />
-        </mp-cell>
-        <mp-cell prop="date" title="时间" ext-class="">
-          <picker data-field="date" mode="date" value="{{date}}" start="{{date}}" end="2020-12-31"
-            bindchange="bindDateChange">
-            <view class="weui-input">{{date}}</view>
-          </picker>
-        </mp-cell>
-      </mp-cells>
-
-    </mp-form>
-
-
-
-
-
-
-    <view class="weui-btn-area">
-      <button class="weui-btn" type="primary" bindtap="submitForm">确定</button>
     </view>
+
+    <view class="weui-form__opr-area">
+      <button class="weui-btn weui-btn_primary" bindtap="submitForm">确定</button>
+    </view>
+
   </view>
 </view>

@@ -1,1 +1,14 @@
-/* pages/my/my.wxss */
+/* pages/index/index.wxss */
+.page {
+  height: 100%
+}
+
+.weui-label {
+  width: 4.1em
+}
+
+.flex_2 {
+  -webkit-box-flex: 2;
+  -webkit-flex: 2;
+  flex: 2
+}
