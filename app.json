@@ -1,8 +1,9 @@
 {
   "pages": [
+    "pages/order/order",
+    "pages/my/my",
     "pages/index/index",
-    "pages/logs/logs",
-    "pages/my/my"
+    "pages/logs/logs"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -31,8 +32,8 @@
   },
   "style": "v2",
   "useExtendedLib": {
-    "kbone": true,
-    "weui": true
+    "kbone": false,
+    "weui": false
   },
   "sitemapLocation": "sitemap.json"
 }

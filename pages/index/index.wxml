@@ -77,8 +77,8 @@
         <view class="weui-cells weui-cells_form">
           <view class="weui-cell ">
             <view class="weui-cell__bd">
-              <textarea class="weui-textarea" placeholder="请简单描述你对拍摄的一些特殊要求" auto-height value="{{notes}}" maxlength="200" bindinput="onInput" data-id="notes"></textarea>
-              <view class="weui-textarea-counter"><text>0</text>/200</view>
+              <textarea class="weui-textarea" placeholder="请简单描述你对拍摄的一些特殊要求" auto-height value="{{notes}}" bindinput="onInput" data-id="notes"></textarea>
+              <view class="weui-textarea-counter"><text>{{notes.length}}</text>/140</view>
             </view>
           </view>
         </view>

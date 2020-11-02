@@ -1,10 +1,19 @@
+@import 'weui.wxss';
+
 .container {
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 200rpx 0;
+  padding: 50rpx 0;
   box-sizing: border-box;
-} 
-@import 'weui.wxss'
+}
+
+.page {
+  min-height: 100%;
+  background-color: var(--weui-BG-0);
+  color: var(--weui-FG-0);
+  font-size: 16px;
+  font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif
+}
