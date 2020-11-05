@@ -2,7 +2,6 @@
 
 .container {
   height: 100%;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
@@ -17,3 +16,50 @@
   font-size: 16px;
   font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif
 }
+
+.my-page, .userinfo, .container{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex
+}
+
+.my-page {
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.userinfo {
+  flex-direction: column;
+  align-items: center;
+  padding: 50rpx 0;
+}
+
+.userinfo-avatar {
+  width: 128rpx;
+  height: 128rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.userinfo-nickname {
+  color: #aaa;
+}
+
+.weui-form-preview {
+  margin: 0 10px 25px 10px;
+}
+
+.weui-form-preview__bd {
+  text-align: left;
+}
+
+.weui-form-preview__ft {
+  line-height: unset;
+}
+
+.more-info {
+  padding: 1% 0;
+  font-size: .9em;
+}
+

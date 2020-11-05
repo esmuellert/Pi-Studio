@@ -1,3 +1,5 @@
+const { formatFullTime, formatTime, randomString } = require("../../utils/util");
+
 // pages/order/order.js
 Page({
 
@@ -5,7 +7,43 @@ Page({
    * 页面的初始数据
    */
   data: {
+    messages: [{
+      type: "received",
+      content: randomString(200),
+      time: formatFullTime(new Date(2020, 3, 12, 14, 52, 42)),
+      index: "m0"
+    }, {
+      type: "messages-time", 
+      content: "2020-12-01",
+      time: "",
+      index: "m1"
+    }, {
+      type: "sent",
+      content: randomString(200),
+      time: formatFullTime(new Date(2020, 2, 15, 16, 31, 52)),
+      index: "m2"
+    }],
+    scrollTop: "m0"
+  },
 
+  onScrollToUpper: function(e) {
+    const top = 'm' + (this.data.messages.length - 1);
+    this.data.messages.push({
+      type: "sent", 
+      content: randomString(),
+      time: formatFullTime(new Date()),
+      index: 'm' + this.data.messages.length
+    });
+    this.data.messages.push({
+      type: "received",
+      content: randomString(),
+      time: formatFullTime(new Date()),
+      index: 'm' + this.data.messages.length
+    });
+    this.setData({
+      messages: this.data.messages,
+      scrollTop: `${top}`
+    })
   },
 
   /**

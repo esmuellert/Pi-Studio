@@ -9,7 +9,7 @@
 		</view>
 	</view>
 	
-	<view class="weui-form-preview" wx:for="{{orders}}">
+	<view class="weui-form-preview" wx:for="{{orders}}" bindtap="onTapOrder">
 		<!-- <view class="weui-form-preview__hd">
 			<view class="weui-form-preview__item">
 				<label class="weui-form-preview__label">付款金额</label>
@@ -28,26 +28,6 @@
 			<view class="weui-form-preview__item">
 				<label class="weui-form-preview__label">拍摄类型</label>
 				<text class="weui-form-preview__value">{{item.type}}</text>
-			</view>
-		</view>
-		<view class="weui-form-preview__ft">
-			<a class="weui-form-preview__btn weui-form-preview__btn_primary more-info">查看订单详情</a>
-		</view>
-	</view>
-
-	<view class="weui-form-preview">
-		<view class="weui-form-preview__bd">
-			<view class="weui-form-preview__item">
-				<label class="weui-form-preview__label">订单状态</label>
-				<text class="weui-form-preview__value">拍摄中</text>
-			</view>
-			<view class="weui-form-preview__item">
-				<label class="weui-form-preview__label">拍摄时间</label>
-				<text class="weui-form-preview__value">2020年12月14日（星期五） 14:30</text>
-			</view>
-			<view class="weui-form-preview__item">
-				<label class="weui-form-preview__label">拍摄类型</label>
-				<text class="weui-form-preview__value">写真</text>
 			</view>
 		</view>
 		<view class="weui-form-preview__ft">

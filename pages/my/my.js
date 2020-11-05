@@ -20,6 +20,13 @@ Page({
       url: '../logs/logs'
     })
   },
+
+  onTapOrder: function(e) {
+    wx.navigateTo({
+      url: '../order/order',
+    })
+  },
+
   onLoad: function () {
 
   },
