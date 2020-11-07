@@ -1,4 +1,8 @@
-const { formatFullTime, formatTime, randomString } = require("../../utils/util");
+const {
+  formatFullTime,
+  formatTime,
+  randomString
+} = require("../../utils/util");
 
 // pages/order/order.js
 Page({
@@ -13,7 +17,7 @@ Page({
       time: formatFullTime(new Date(2020, 3, 12, 14, 52, 42)),
       index: "m0"
     }, {
-      type: "messages-time", 
+      type: "messages-time",
       content: "2020-12-01",
       time: "",
       index: "m1"
@@ -23,26 +27,39 @@ Page({
       time: formatFullTime(new Date(2020, 2, 15, 16, 31, 52)),
       index: "m2"
     }],
-    scrollTop: "m0"
+    scrollTop: "m0",
+    images: [],
+    hasImage: false
   },
 
-  onScrollToUpper: function(e) {
+  onScrollToUpper: function (e) {
     const top = 'm' + (this.data.messages.length - 1);
-    this.data.messages.push({
-      type: "sent", 
-      content: randomString(),
-      time: formatFullTime(new Date()),
-      index: 'm' + this.data.messages.length
-    });
-    this.data.messages.push({
-      type: "received",
-      content: randomString(),
-      time: formatFullTime(new Date()),
-      index: 'm' + this.data.messages.length
-    });
+    for (let i = 0; i < 5; i++) {
+      this.data.messages.push({
+        type: "sent",
+        content: randomString(),
+        time: formatFullTime(new Date()),
+        index: 'm' + this.data.messages.length
+      });
+      this.data.messages.push({
+        type: "received",
+        content: randomString(),
+        time: formatFullTime(new Date()),
+        index: 'm' + this.data.messages.length
+      });
+    }
+
+
     this.setData({
       messages: this.data.messages,
       scrollTop: `${top}`
+    })
+  },
+
+  onDownloadImage: function (e) {
+    this.setData({
+      hasImage: true,
+      images: ["../../images/美签.jpg", "../../images/大图.jpg"]
     })
   },
 
