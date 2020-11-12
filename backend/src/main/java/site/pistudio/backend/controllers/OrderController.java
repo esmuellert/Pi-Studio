@@ -7,6 +7,7 @@ import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.services.OrderService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -28,7 +29,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id) {
+    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id, HttpServletResponse response) {
         Order order = orderRepository.findByOrderNumber(id);
         if (order == null) {
             throw new NoSuchElementException();

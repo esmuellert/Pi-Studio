@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderRepository extends CrudRepository<Order, Long> {
     @Override
-    List<Order> findAll();
+    public List<Order> findAll();
 
-    Order findByOrderNumber(long id);
+    public Order findByOrderNumber(long id);
 }

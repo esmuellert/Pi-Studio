@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.entities.Order;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Random;
 
 @Service
@@ -18,12 +19,12 @@ public class OrderService {
 
 
     private long generateOrderNumber(int bound) {
-        Calendar calendar = Calendar.getInstance();
-        String year = String.format("%02d", calendar.get(Calendar.YEAR) % 2000);
-        String day = String.format("%03d", calendar.get(Calendar.DAY_OF_YEAR) + 1);
-        String hour = String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY));
+        LocalDateTime now = LocalDateTime.now();
+        String year = String.format("%02d", now.getYear() % 2000);
+        String day = String.format("%03d", now.getDayOfYear());
+        String hour = String.format("%02d", now.getHour());
         String time = year + day + hour;
-        int suffix = new Random(calendar.getTimeInMillis()).nextInt(bound);
+        int suffix = new Random(now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()).nextInt(bound);
         return Long.parseLong(time + String.format("%0" + (Integer.toString(bound).length() - 1) + "d", suffix));
     }
 
@@ -45,4 +46,6 @@ public class OrderService {
         } while (failure > 0);
         return orderRepository.save(order);
     }
+
+
 }

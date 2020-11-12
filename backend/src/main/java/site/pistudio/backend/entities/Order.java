@@ -1,18 +1,19 @@
 package site.pistudio.backend.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "customer_order")
 public class Order {
-    private long orderNumber;
-    private String userId;
-
-
     @Id
+    @Column(unique = true)
+    private long orderNumber;
+
+//    @Column(unique = true)
+    private String openId;
+    
+
+
     public long getOrderNumber() {
         return orderNumber;
     }
@@ -21,12 +22,12 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getOpenId() {
+        return openId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setOpenId(String userId) {
+        this.openId = userId;
     }
 
 }
