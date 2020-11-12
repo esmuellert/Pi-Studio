@@ -15,8 +15,6 @@ public class User {
 //    @Column(unique = true)
     private String openId;
 
-    @Column(length = 500, unique = true)
-    private String token;
     private LocalDateTime registerDate;
     private LocalDateTime tokenExpired;
     private byte[] tokenSecret;
@@ -35,14 +33,6 @@ public class User {
 
     public void setOpenId(String openId) {
         this.openId = openId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public LocalDateTime getRegisterDate() {

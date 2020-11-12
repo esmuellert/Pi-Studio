@@ -1,7 +1,7 @@
 package site.pistudio.backend.services;
 
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.OrderRepository;
+import site.pistudio.backend.service.OrderRepository;
 import site.pistudio.backend.entities.Order;
 
 import java.time.LocalDateTime;

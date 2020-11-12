@@ -1,4 +1,4 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.service;
 
 import org.springframework.data.repository.CrudRepository;
 import site.pistudio.backend.entities.Order;

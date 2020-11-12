@@ -1,4 +1,4 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +11,7 @@ import site.pistudio.backend.services.OrderService;
 import static org.junit.Assert.assertEquals;
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class OrderNumberIntegrationTest {
+public class OrderServiceIntegrationTest {
     @Autowired
     OrderService orderService;
 
