@@ -1,4 +1,4 @@
-package site.pistudio.backend.service;
+package site.pistudio.backend.dao;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

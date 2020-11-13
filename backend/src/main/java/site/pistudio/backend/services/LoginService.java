@@ -3,19 +3,18 @@ package site.pistudio.backend.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import site.pistudio.backend.dto.CodeToSessionObject;
+import site.pistudio.backend.dao.UserRepository;
 import site.pistudio.backend.entities.User;
-import site.pistudio.backend.exceptions.TokenIllegalException;
-import site.pistudio.backend.service.UserRepository;
+import site.pistudio.backend.exceptions.InvalidCodeException;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,21 +28,37 @@ public class LoginService {
         this.userRepository = userRepository;
     }
 
-    public String login(String code, String token) {
-
-
+    public String login(String code, String token) throws JsonProcessingException {
+        TokenStatusAndUser tokenStatusObject = verifyToken(token);
         User user = new User();
 
-        user.setOpenId("Yanuo Ma");
-        token = generateToken(user, TokenStatus.NEW);
-        LocalDateTime now = LocalDateTime.now();
-        user.setRegisterDate(now);
+        if (tokenStatusObject.tokenStatus == TokenStatus.NEW) {
+            String openId = getOpenId(code);
+            User checkIfUserExisted = userRepository.findUserByOpenId(openId);
+            if (checkIfUserExisted != null) {
+                token = generateToken(checkIfUserExisted, TokenStatus.EXPIRED);
+                userRepository.save(checkIfUserExisted);
+                return token;
+            }
+            token = generateToken(user, tokenStatusObject.tokenStatus);
+            user.setOpenId(openId);
+            user.setRegisterDate(LocalDateTime.now());
+        } else if (tokenStatusObject.tokenStatus == TokenStatus.RENEW || tokenStatusObject.tokenStatus == TokenStatus.EXPIRED) {
+            user = tokenStatusObject.user;
+            token = generateToken(user, tokenStatusObject.tokenStatus);
+        } else {
+            return token;
+        }
         userRepository.save(user);
         return token;
     }
 
-    private String getOpenId(String code) {
-        return "";
+    private String getOpenId(String code) throws JsonProcessingException {
+        Map<String, String> responseMap = requestForOpenId(code);
+        if (responseMap.containsKey("errcode") || !responseMap.containsKey("openid")) {
+            throw new InvalidCodeException();
+        }
+        return responseMap.get("openid");
     }
 
     private String generateToken(User user, TokenStatus status) {
@@ -76,17 +91,26 @@ public class LoginService {
         return token;
     }
 
-    private TokenStatus verifyToken(String token) {
-        DecodedJWT jwt = JWT.decode(token);
+    private TokenStatusAndUser verifyToken(String token) {
+        if (token == null) {
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
+        }
+        DecodedJWT jwt;
+        try {
+            jwt = JWT.decode(token);
+        } catch (JWTDecodeException | IllegalArgumentException e) {
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
+        }
+
         List<String> idList = jwt.getAudience();
         if (idList.size() != 1) {
-            throw new TokenIllegalException();
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
         }
         String id = idList.get(0);
 
         User user = userRepository.findUserById(UUID.fromString(id));
         if (user == null) {
-            throw new TokenIllegalException();
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
         }
 
         Algorithm algorithm = Algorithm.HMAC512(user.getTokenSecret());
@@ -98,18 +122,18 @@ public class LoginService {
         try {
             verifier.verify(token);
         } catch (TokenExpiredException e) {
-            return TokenStatus.EXPIRED;
+            return new TokenStatusAndUser(user, TokenStatus.EXPIRED);
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (now.plusDays(1).isAfter(user.getTokenExpired())) {
-            return TokenStatus.RENEW;
+            return new TokenStatusAndUser(user, TokenStatus.RENEW);
         }
 
-        return TokenStatus.VALID;
+        return new TokenStatusAndUser(user, TokenStatus.VALID);
     }
 
-    public Map<String, String> requestForOpenId(String code) throws IOException {
+    public Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         String appId = "wxd79dee47f1d31c2e";
         String secret = "62afde5eb0c2e61981b018354608e5e4";
@@ -117,16 +141,26 @@ public class LoginService {
         url = url + "?" + "appid=" + appId + "&" + "secret=" + secret + "&" + "js_code=" + code + "&" + "grant_type"
                 + "=" + grantType;
         RestTemplate restTemplate = new RestTemplate();
-        String responseObject =  restTemplate.getForObject(url, String.class);
+        String responseObject = restTemplate.getForObject(url, String.class);
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, String> responseMap = objectMapper.readValue(responseObject,
-                new TypeReference<Map<String, String>>(){});
-        return responseMap;
+        return objectMapper.readValue(responseObject,
+                new TypeReference<Map<String, String>>() {
+                });
     }
 
 
     private enum TokenStatus {
         NEW, EXPIRED, RENEW, VALID
+    }
+
+    private static class TokenStatusAndUser {
+        private final User user;
+        private final TokenStatus tokenStatus;
+
+        public TokenStatusAndUser(User user, TokenStatus tokenStatus) {
+            this.user = user;
+            this.tokenStatus = tokenStatus;
+        }
     }
 
 }

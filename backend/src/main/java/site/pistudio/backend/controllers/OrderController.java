@@ -3,7 +3,7 @@ package site.pistudio.backend.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.service.OrderRepository;
+import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.services.OrderService;
 

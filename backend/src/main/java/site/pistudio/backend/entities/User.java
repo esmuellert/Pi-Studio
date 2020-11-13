@@ -12,7 +12,7 @@ public class User {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-//    @Column(unique = true)
+    @Column(unique = true)
     private String openId;
 
     private LocalDateTime registerDate;
