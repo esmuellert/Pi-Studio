@@ -1,12 +1,13 @@
 package site.pistudio.backend.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderForm {
     private String wechatId;
     private String phoneNumber;
     private String type;
-    private List<String> schedule;
+    private List<LocalDateTime> schedule;
     private String notes;
     private String token;
 
@@ -34,11 +35,11 @@ public class OrderForm {
         this.type = type;
     }
 
-    public List<String> getSchedule() {
+    public List<LocalDateTime> getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(List<String> schedule) {
+    public void setSchedule(List<LocalDateTime> schedule) {
         this.schedule = schedule;
     }
 

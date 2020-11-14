@@ -1,6 +1,8 @@
 package site.pistudio.backend.entities;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "customer_order")
@@ -9,10 +11,21 @@ public class Order {
     @Column(unique = true)
     private long orderNumber;
 
-//    @Column(unique = true)
+    @Column(unique = true)
     private String openId;
-    
 
+    private String wechatId;
+
+    private String phoneNumber;
+
+    private String type;
+
+    private String notes;
+
+    private LocalDateTime orderedTime;
+
+    @OneToMany(mappedBy = "order")
+    private List<Schedule> schedules;
 
     public long getOrderNumber() {
         return orderNumber;
@@ -26,8 +39,55 @@ public class Order {
         return openId;
     }
 
-    public void setOpenId(String userId) {
-        this.openId = userId;
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
+    public String getWechatId() {
+        return wechatId;
+    }
+
+    public void setWechatId(String wechatId) {
+        this.wechatId = wechatId;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public LocalDateTime getOrderedTime() {
+        return orderedTime;
+    }
+
+    public void setOrderedTime(LocalDateTime orderedTime) {
+        this.orderedTime = orderedTime;
+    }
+
+    public List<Schedule> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
+    }
 }

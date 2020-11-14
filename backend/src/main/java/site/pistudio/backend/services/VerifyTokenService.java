@@ -4,12 +4,15 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.UserRepository;
 import site.pistudio.backend.entities.User;
+import site.pistudio.backend.exceptions.InvalidTokenException;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class VerifyTokenService {
     UserRepository userRepository;
 
@@ -17,7 +20,8 @@ public class VerifyTokenService {
         this.userRepository = userRepository;
     }
 
-    public LoginService.TokenStatus verifyToken(String token) {
+    public String verifyToken(String token) {
+        String openId;
         try {
             DecodedJWT jwt = JWT.decode(token);
             List<String> idList = jwt.getAudience();
@@ -29,9 +33,10 @@ public class VerifyTokenService {
                     .withAudience(id)
                     .build();
             verifier.verify(token);
+            openId = user.getOpenId();
         } catch (RuntimeException e) {
-            return LoginService.TokenStatus.INVALID;
+            throw new InvalidTokenException();
         }
-        return LoginService.TokenStatus.VALID;
+        return openId;
     }
 }

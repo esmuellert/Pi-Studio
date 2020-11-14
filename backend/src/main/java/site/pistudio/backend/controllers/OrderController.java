@@ -25,8 +25,9 @@ public class OrderController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> create(@RequestBody OrderForm orderForm) {
-        return ResponseEntity.ok().body("order placed");
+    public ResponseEntity<Order> create(@RequestBody OrderForm orderForm) {
+        Order order = orderService.placeOrder(orderForm);
+        return ResponseEntity.ok().body(order);
     }
 
     @GetMapping("/{id}")

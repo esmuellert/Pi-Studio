@@ -20,11 +20,6 @@ public class OrderServiceIntegrationTest {
 
     @Test
     public void generateManyOrderNumber() {
-        for (int i = 0; i < 1000; i++) {
-            Order order = new Order();
-            order.setOpenId("Yanuo Ma");
-            orderService.placeOrder(order);
-        }
-        assertEquals(1000, orderRepository.findAll().size());
+            orderService.generateValidOrderNumber();
     }
 }

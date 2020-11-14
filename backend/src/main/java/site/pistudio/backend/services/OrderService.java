@@ -2,7 +2,10 @@ package site.pistudio.backend.services;
 
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.OrderRepository;
+import site.pistudio.backend.dao.ScheduleRepository;
+import site.pistudio.backend.dto.OrderForm;
 import site.pistudio.backend.entities.Order;
+import site.pistudio.backend.entities.Schedule;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -13,17 +16,44 @@ public class OrderService {
     final
     OrderRepository orderRepository;
 
-    public OrderService(OrderRepository orderRepository) {
+    VerifyTokenService verifyTokenService;
+
+    ScheduleRepository scheduleRepository;
+
+    public OrderService(OrderRepository orderRepository,
+                        VerifyTokenService verifyTokenService,
+                        ScheduleRepository scheduleRepository) {
         this.orderRepository = orderRepository;
+        this.verifyTokenService = verifyTokenService;
+        this.scheduleRepository = scheduleRepository;
     }
 
-    public Order placeOrder(Order order) {
+
+    public Order placeOrder(OrderForm orderForm) {
+        Order order = new Order();
+        String openId = verifyTokenService.verifyToken(orderForm.getToken());
         long orderNumber = generateValidOrderNumber();
 
-        return orderRepository.save(order);
+
+        order.setOrderNumber(orderNumber);
+        order.setWechatId(orderForm.getWechatId());
+        order.setOpenId(openId);
+        order.setPhoneNumber(orderForm.getPhoneNumber());
+        order.setType(orderForm.getType());
+        order.setNotes(orderForm.getNotes());
+        order.setOrderedTime(LocalDateTime.now());
+        orderRepository.save(order);
+
+        for (LocalDateTime time : orderForm.getSchedule()) {
+            Schedule schedule = new Schedule();
+            schedule.setTime(time);
+            schedule.setOrder(order);
+            scheduleRepository.save(schedule);
+        }
+        return order;
     }
 
-    private long generateValidOrderNumber() {
+    public long generateValidOrderNumber() {
         int bound = 10000;
         int failure = 0;
         long id;
