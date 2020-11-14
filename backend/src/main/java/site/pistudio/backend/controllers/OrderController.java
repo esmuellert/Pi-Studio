@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.pistudio.backend.dao.OrderRepository;
+import site.pistudio.backend.dto.OrderForm;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.services.OrderService;
 
@@ -24,8 +25,8 @@ public class OrderController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public Order create(@RequestBody Order order) {
-        return orderService.placeOrder(order);
+    public ResponseEntity<String> create(@RequestBody OrderForm orderForm) {
+        return ResponseEntity.ok().body("order placed");
     }
 
     @GetMapping("/{id}")

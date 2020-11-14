@@ -17,6 +17,30 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
+    public Order placeOrder(Order order) {
+        long orderNumber = generateValidOrderNumber();
+
+        return orderRepository.save(order);
+    }
+
+    private long generateValidOrderNumber() {
+        int bound = 10000;
+        int failure = 0;
+        long id;
+        do {
+            if (failure > 3) {
+                bound *= 10;
+                failure = 0;
+            }
+            id = generateOrderNumber(bound);
+            if (orderRepository.findByOrderNumber(id) != null) {
+                failure++;
+            } else {
+                failure = 0;
+            }
+        } while (failure > 0);
+        return id;
+    }
 
     private long generateOrderNumber(int bound) {
         LocalDateTime now = LocalDateTime.now();
@@ -27,25 +51,5 @@ public class OrderService {
         int suffix = new Random(now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()).nextInt(bound);
         return Long.parseLong(time + String.format("%0" + (Integer.toString(bound).length() - 1) + "d", suffix));
     }
-
-    public Order placeOrder(Order order) {
-        int bound = 10000;
-        int failure = 0;
-        do {
-            if (failure > 3) {
-                bound *= 10;
-                failure = 0;
-            }
-            long id = generateOrderNumber(bound);
-            if (orderRepository.findByOrderNumber(id) != null) {
-                failure++;
-            } else {
-                order.setOrderNumber(id);
-                failure = 0;
-            }
-        } while (failure > 0);
-        return orderRepository.save(order);
-    }
-
 
 }

@@ -3,8 +3,6 @@ package site.pistudio.backend.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,14 +34,14 @@ public class LoginService {
             String openId = getOpenId(code);
             User checkIfUserExisted = userRepository.findUserByOpenId(openId);
             if (checkIfUserExisted != null) {
-                token = generateToken(checkIfUserExisted, TokenStatus.EXPIRED);
+                token = generateToken(checkIfUserExisted, TokenStatus.RENEW);
                 userRepository.save(checkIfUserExisted);
                 return token;
             }
             token = generateToken(user, tokenStatusObject.tokenStatus);
             user.setOpenId(openId);
             user.setRegisterDate(LocalDateTime.now());
-        } else if (tokenStatusObject.tokenStatus == TokenStatus.RENEW || tokenStatusObject.tokenStatus == TokenStatus.EXPIRED) {
+        } else if (tokenStatusObject.tokenStatus == TokenStatus.RENEW) {
             user = tokenStatusObject.user;
             token = generateToken(user, tokenStatusObject.tokenStatus);
         } else {
@@ -92,37 +90,23 @@ public class LoginService {
     }
 
     private TokenStatusAndUser verifyToken(String token) {
-        if (token == null) {
-            return new TokenStatusAndUser(null, TokenStatus.NEW);
-        }
+
         DecodedJWT jwt;
+        JWTVerifier verifier;
+        User user;
         try {
             jwt = JWT.decode(token);
-        } catch (JWTDecodeException | IllegalArgumentException e) {
-            return new TokenStatusAndUser(null, TokenStatus.NEW);
-        }
-
-        List<String> idList = jwt.getAudience();
-        if (idList.size() != 1) {
-            return new TokenStatusAndUser(null, TokenStatus.NEW);
-        }
-        String id = idList.get(0);
-
-        User user = userRepository.findUserById(UUID.fromString(id));
-        if (user == null) {
-            return new TokenStatusAndUser(null, TokenStatus.NEW);
-        }
-
-        Algorithm algorithm = Algorithm.HMAC512(user.getTokenSecret());
-        JWTVerifier verifier = JWT.require(algorithm)
-                .withIssuer("pi-studio")
-                .withAudience(id)
-                .build();
-
-        try {
+            List<String> idList = jwt.getAudience();
+            String id = idList.get(0);
+            user = userRepository.findUserById(UUID.fromString(id));
+            Algorithm algorithm = Algorithm.HMAC512(user.getTokenSecret());
+            verifier = JWT.require(algorithm)
+                    .withIssuer("pi-studio")
+                    .withAudience(id)
+                    .build();
             verifier.verify(token);
-        } catch (TokenExpiredException e) {
-            return new TokenStatusAndUser(user, TokenStatus.EXPIRED);
+        } catch (RuntimeException e) {
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -149,8 +133,8 @@ public class LoginService {
     }
 
 
-    private enum TokenStatus {
-        NEW, EXPIRED, RENEW, VALID
+    enum TokenStatus {
+        NEW, RENEW, VALID, INVALID
     }
 
     private static class TokenStatusAndUser {
