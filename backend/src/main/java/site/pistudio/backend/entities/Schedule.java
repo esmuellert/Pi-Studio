@@ -39,4 +39,13 @@ public class Schedule {
     public void setOrder(Order order) {
         this.order = order;
     }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "id=" + id +
+                ", time=" + time +
+                ", order=" + order +
+                '}';
+    }
 }

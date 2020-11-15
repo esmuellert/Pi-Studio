@@ -1,5 +1,8 @@
 package site.pistudio.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import site.pistudio.backend.utils.OrderStatus;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +14,8 @@ public class Order {
     @Column(unique = true)
     private long orderNumber;
 
-    @Column(unique = true)
+    private OrderStatus orderStatus;
+
     private String openId;
 
     private String wechatId;
@@ -25,6 +29,7 @@ public class Order {
     private LocalDateTime orderedTime;
 
     @OneToMany(mappedBy = "order")
+    @JsonIgnore
     private List<Schedule> schedules;
 
     public long getOrderNumber() {
@@ -33,6 +38,14 @@ public class Order {
 
     public void setOrderNumber(long orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus status) {
+        this.orderStatus = status;
     }
 
     public String getOpenId() {
@@ -90,4 +103,6 @@ public class Order {
     public void setSchedules(List<Schedule> schedules) {
         this.schedules = schedules;
     }
+
+
 }

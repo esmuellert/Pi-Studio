@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import site.pistudio.backend.dao.UserRepository;
 import site.pistudio.backend.entities.User;
 import site.pistudio.backend.exceptions.InvalidCodeException;
+import site.pistudio.backend.utils.TokenStatus;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -133,9 +134,7 @@ public class LoginService {
     }
 
 
-    enum TokenStatus {
-        NEW, RENEW, VALID, INVALID
-    }
+
 
     private static class TokenStatusAndUser {
         private final User user;

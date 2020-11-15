@@ -14,13 +14,13 @@ import java.util.NoSuchElementException;
 public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {NoSuchElementException.class}) // 404 not found
-    protected ResponseEntity<String> handleNoElement(HttpServletRequest request, NoSuchElementException e) {
-        return ResponseEntity.notFound().build();
+    protected ResponseEntity<String> handleNoElement(NoSuchElementException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(value = InvalidTokenException.class) // given token is no longer valid
     protected ResponseEntity<String> handleInvalidToken(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The token is invalid");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token is invalid");
     }
 
 

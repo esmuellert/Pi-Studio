@@ -3,12 +3,18 @@ package site.pistudio.backend.services;
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.dao.ScheduleRepository;
+import site.pistudio.backend.dto.OrderClientBody;
 import site.pistudio.backend.dto.OrderForm;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.entities.Schedule;
+import site.pistudio.backend.exceptions.InvalidTokenException;
+import site.pistudio.backend.utils.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 @Service
@@ -29,13 +35,13 @@ public class OrderService {
     }
 
 
-    public Order placeOrder(OrderForm orderForm) {
+    public OrderClientBody placeOrder(OrderForm orderForm) {
         Order order = new Order();
         String openId = verifyTokenService.verifyToken(orderForm.getToken());
         long orderNumber = generateValidOrderNumber();
 
-
         order.setOrderNumber(orderNumber);
+        order.setOrderStatus(OrderStatus.PLACED);
         order.setWechatId(orderForm.getWechatId());
         order.setOpenId(openId);
         order.setPhoneNumber(orderForm.getPhoneNumber());
@@ -50,10 +56,39 @@ public class OrderService {
             schedule.setOrder(order);
             scheduleRepository.save(schedule);
         }
-        return order;
+        OrderClientBody orderClientBody = OrderClientBody.orderToClientBody(order);
+        orderClientBody.setSchedule(orderForm.getSchedule());
+        return orderClientBody;
     }
 
-    public long generateValidOrderNumber() {
+    public OrderClientBody getOrderByOrderNumber(long orderNumber, String token) {
+        String openId = verifyTokenService.verifyToken(token);
+        Order order = orderRepository.findByOrderNumber(orderNumber);
+        if (order == null) {
+            throw new NoSuchElementException("Order: " + orderNumber + " not found!");
+        }
+        if (!openId.equals(order.getOpenId())) {
+            throw new InvalidTokenException();
+        }
+        List<Schedule> schedules = scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+        return OrderClientBody.OrderToClientBody(order, schedules);
+    }
+
+    public List<OrderClientBody> getOrders(String token) {
+        String openId = verifyTokenService.verifyToken(token);
+        List<Order> orders = orderRepository.findOrdersByOpenIdOrderByOrderedTime(openId);
+        List<OrderClientBody> orderClientBodies = new ArrayList<>();
+        for (Order order : orders) {
+            List<Schedule> schedules =
+                    scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+            orderClientBodies.add(OrderClientBody.OrderToClientBody(order, schedules));
+        }
+        return orderClientBodies;
+    }
+
+
+
+    private long generateValidOrderNumber() {
         int bound = 10000;
         int failure = 0;
         long id;
