@@ -7,8 +7,10 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import site.pistudio.backend.dao.AdminRepository;
 import site.pistudio.backend.dao.UserRepository;
 import site.pistudio.backend.entities.User;
 import site.pistudio.backend.exceptions.InvalidCodeException;
@@ -21,10 +23,16 @@ import java.util.*;
 
 @Service
 public class LoginService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AdminRepository adminRepository;
 
-    public LoginService(UserRepository userRepository) {
+    public LoginService(UserRepository userRepository,
+                        BCryptPasswordEncoder bCryptPasswordEncoder,
+                        AdminRepository adminRepository) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.adminRepository = adminRepository;
     }
 
     public String login(String code, String token) throws JsonProcessingException {
@@ -136,8 +144,6 @@ public class LoginService {
                 new TypeReference<Map<String, String>>() {
                 });
     }
-
-
 
 
     private static class TokenStatusAndUser {

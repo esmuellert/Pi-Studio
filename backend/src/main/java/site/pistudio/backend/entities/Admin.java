@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 public class Admin {
@@ -13,7 +14,8 @@ public class Admin {
 
     private String username;
     private String password;
-    private String token;
+    private LocalDateTime tokenExpired;
+    private byte[] tokenSecret;
 
     public long getId() {
         return id;
@@ -39,11 +41,19 @@ public class Admin {
         this.password = password;
     }
 
-    public String getToken() {
-        return token;
+    public LocalDateTime getTokenExpired() {
+        return tokenExpired;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setTokenExpired(LocalDateTime token_expired) {
+        this.tokenExpired = token_expired;
+    }
+
+    public byte[] getTokenSecret() {
+        return tokenSecret;
+    }
+
+    public void setTokenSecret(byte[] token_secret) {
+        this.tokenSecret = token_secret;
     }
 }
