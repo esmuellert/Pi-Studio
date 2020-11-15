@@ -3,7 +3,6 @@ package site.pistudio.backend.dao;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import site.pistudio.backend.entities.Order;
-import site.pistudio.backend.services.OrderService;
 
 import java.util.List;
 

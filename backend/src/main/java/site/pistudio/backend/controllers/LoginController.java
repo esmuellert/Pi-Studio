@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import site.pistudio.backend.services.LoginService;
 
+import java.util.Map;
+
 
 @RestController
  @RequestMapping("login")
@@ -18,9 +20,9 @@ public class LoginController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public String login(@RequestBody LoginForm body) throws JsonProcessingException {
-        String code = body.getCode();
-        String token = body.getToken();
+    public String login(@RequestBody Map<String, String> body) throws JsonProcessingException {
+        String code = body.get("code");
+        String token = body.get("token");
         return loginService.login(code, token);
     }
 

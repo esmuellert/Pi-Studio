@@ -32,6 +32,10 @@ public class Order {
     @JsonIgnore
     private List<Schedule> schedules;
 
+    @OneToMany(mappedBy = "order")
+    @JsonIgnore
+    private List<Message> messages;
+
     public long getOrderNumber() {
         return orderNumber;
     }

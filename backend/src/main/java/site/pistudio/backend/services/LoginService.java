@@ -52,6 +52,10 @@ public class LoginService {
         return token;
     }
 
+//    public String login(String username, String password, String token) {
+//
+//    }
+
     private String getOpenId(String code) throws JsonProcessingException {
         Map<String, String> responseMap = requestForOpenId(code);
         if (responseMap.containsKey("errcode") || !responseMap.containsKey("openid")) {
