@@ -26,6 +26,6 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void requestForOpenId() throws IOException {
-        System.out.println(loginService.requestForOpenId("041jXAFa169vYz0oalHa1fwNm64jXAF8"));
+//        System.out.println(loginService.requestForOpenId("041jXAFa169vYz0oalHa1fwNm64jXAF8"));
     }
 }

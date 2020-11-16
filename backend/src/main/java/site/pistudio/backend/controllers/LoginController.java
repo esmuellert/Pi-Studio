@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 @RestController
- @RequestMapping("login")
+@RequestMapping("login")
 public class LoginController {
 
     private final LoginService loginService;
@@ -24,27 +24,6 @@ public class LoginController {
         String code = body.get("code");
         String token = body.get("token");
         return loginService.login(code, token);
-    }
-
-    private static class LoginForm {
-        private String code;
-        private String token;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
     }
 
 

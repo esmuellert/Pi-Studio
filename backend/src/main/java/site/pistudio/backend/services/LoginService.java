@@ -60,9 +60,33 @@ public class LoginService {
         return token;
     }
 
-//    public String login(String username, String password, String token) {
-//
-//    }
+    private TokenStatusAndUser verifyToken(String token) {
+
+        DecodedJWT jwt;
+        JWTVerifier verifier;
+        User user;
+        try {
+            jwt = JWT.decode(token);
+            List<String> idList = jwt.getAudience();
+            String id = idList.get(0);
+            user = userRepository.findUserById(UUID.fromString(id));
+            Algorithm algorithm = Algorithm.HMAC512(user.getTokenSecret());
+            verifier = JWT.require(algorithm)
+                    .withIssuer("pi-studio")
+                    .withAudience(id)
+                    .build();
+            verifier.verify(token);
+        } catch (RuntimeException e) {
+            return new TokenStatusAndUser(null, TokenStatus.NEW);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.plusDays(1).isAfter(user.getTokenExpired())) {
+            return new TokenStatusAndUser(user, TokenStatus.RENEW);
+        }
+
+        return new TokenStatusAndUser(user, TokenStatus.VALID);
+    }
 
     private String getOpenId(String code) throws JsonProcessingException {
         Map<String, String> responseMap = requestForOpenId(code);
@@ -70,6 +94,21 @@ public class LoginService {
             throw new InvalidCodeException();
         }
         return responseMap.get("openid");
+    }
+
+    private Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
+        String url = "https://api.weixin.qq.com/sns/jscode2session";
+        String appId = "wxd79dee47f1d31c2e";
+        String secret = "62afde5eb0c2e61981b018354608e5e4";
+        String grantType = "authorization_code";
+        url = url + "?" + "appid=" + appId + "&" + "secret=" + secret + "&" + "js_code=" + code + "&" + "grant_type"
+                + "=" + grantType;
+        RestTemplate restTemplate = new RestTemplate();
+        String responseObject = restTemplate.getForObject(url, String.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(responseObject,
+                new TypeReference<Map<String, String>>() {
+                });
     }
 
     private String generateToken(User user, TokenStatus status) {
@@ -101,50 +140,6 @@ public class LoginService {
         user.setTokenSecret(secret);
         return token;
     }
-
-    private TokenStatusAndUser verifyToken(String token) {
-
-        DecodedJWT jwt;
-        JWTVerifier verifier;
-        User user;
-        try {
-            jwt = JWT.decode(token);
-            List<String> idList = jwt.getAudience();
-            String id = idList.get(0);
-            user = userRepository.findUserById(UUID.fromString(id));
-            Algorithm algorithm = Algorithm.HMAC512(user.getTokenSecret());
-            verifier = JWT.require(algorithm)
-                    .withIssuer("pi-studio")
-                    .withAudience(id)
-                    .build();
-            verifier.verify(token);
-        } catch (RuntimeException e) {
-            return new TokenStatusAndUser(null, TokenStatus.NEW);
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        if (now.plusDays(1).isAfter(user.getTokenExpired())) {
-            return new TokenStatusAndUser(user, TokenStatus.RENEW);
-        }
-
-        return new TokenStatusAndUser(user, TokenStatus.VALID);
-    }
-
-    public Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
-        String url = "https://api.weixin.qq.com/sns/jscode2session";
-        String appId = "wxd79dee47f1d31c2e";
-        String secret = "62afde5eb0c2e61981b018354608e5e4";
-        String grantType = "authorization_code";
-        url = url + "?" + "appid=" + appId + "&" + "secret=" + secret + "&" + "js_code=" + code + "&" + "grant_type"
-                + "=" + grantType;
-        RestTemplate restTemplate = new RestTemplate();
-        String responseObject = restTemplate.getForObject(url, String.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(responseObject,
-                new TypeReference<Map<String, String>>() {
-                });
-    }
-
 
     private static class TokenStatusAndUser {
         private final User user;
