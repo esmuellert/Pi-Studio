@@ -1,16 +1,14 @@
 package site.pistudio.backend.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-public class Admin {
+public class Admin implements Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     private String username;
@@ -18,10 +16,12 @@ public class Admin {
     private LocalDateTime tokenExpired;
     private byte[] tokenSecret;
 
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public void setId(UUID id) {
         this.id = id;
     }
@@ -42,18 +42,22 @@ public class Admin {
         this.password = password;
     }
 
+    @Override
     public LocalDateTime getTokenExpired() {
         return tokenExpired;
     }
 
+    @Override
     public void setTokenExpired(LocalDateTime token_expired) {
         this.tokenExpired = token_expired;
     }
 
+    @Override
     public byte[] getTokenSecret() {
         return tokenSecret;
     }
 
+    @Override
     public void setTokenSecret(byte[] token_secret) {
         this.tokenSecret = token_secret;
     }

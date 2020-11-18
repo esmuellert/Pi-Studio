@@ -24,6 +24,7 @@ public class Order {
 
     private String type;
 
+    @Column(columnDefinition = "TEXT")
     private String notes;
 
     private LocalDateTime orderedTime;

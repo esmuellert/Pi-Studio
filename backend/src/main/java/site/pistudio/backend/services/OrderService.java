@@ -61,22 +61,29 @@ public class OrderService {
         return orderClientBody;
     }
 
-    public OrderClientBody getOrderByOrderNumber(long orderNumber, String token) {
-        String openId = verifyTokenService.verifyToken(token);
+    public OrderClientBody getOrderByOrderNumber(long orderNumber, String openId) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         if (order == null) {
             throw new NoSuchElementException("Order: " + orderNumber + " not found!");
         }
-        if (!openId.equals(order.getOpenId())) {
-            throw new InvalidTokenException();
+        if (!openId.equals(order.getOpenId()) && !openId.equals("admin")) {
+            throw new InvalidTokenException(openId);
         }
         List<Schedule> schedules = scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
         return OrderClientBody.OrderToClientBody(order, schedules);
     }
 
-    public List<OrderClientBody> getOrders(String token) {
-        String openId = verifyTokenService.verifyToken(token);
+    public List<OrderClientBody> getOrdersByOpenId(String openId) {
         List<Order> orders = orderRepository.findOrdersByOpenIdOrderByOrderedTime(openId);
+        return ordersToClientBodies(orders);
+    }
+
+    public List<OrderClientBody> getOrdersForAdmin(OrderStatus status) {
+        List<Order> orders = orderRepository.findAllByOrderByOrderedTime();
+        return ordersToClientBodies(orders);
+    }
+
+    private List<OrderClientBody> ordersToClientBodies(List<Order> orders) {
         List<OrderClientBody> orderClientBodies = new ArrayList<>();
         for (Order order : orders) {
             List<Schedule> schedules =
@@ -85,7 +92,6 @@ public class OrderService {
         }
         return orderClientBodies;
     }
-
 
 
     private long generateValidOrderNumber() {

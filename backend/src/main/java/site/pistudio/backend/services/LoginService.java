@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import site.pistudio.backend.dao.AdminRepository;
 import site.pistudio.backend.dao.UserRepository;
+import site.pistudio.backend.entities.Admin;
+import site.pistudio.backend.entities.Role;
 import site.pistudio.backend.entities.User;
+import site.pistudio.backend.exceptions.IllegalAdminException;
 import site.pistudio.backend.exceptions.InvalidCodeException;
 import site.pistudio.backend.utils.TokenStatus;
 
@@ -111,33 +114,65 @@ public class LoginService {
                 });
     }
 
-    private String generateToken(User user, TokenStatus status) {
-        UUID id;
+    public String generateToken(Role role, TokenStatus status) {
+
+        boolean isAdmin = role.getClass().equals(Admin.class);
+        String id;
         if (status == TokenStatus.NEW) {
-            id = UUID.randomUUID();
+            id = UUID.randomUUID().toString();
+        } else if (isAdmin) {
+            id = ((Admin) role).getUsername();
         } else {
-            id = user.getId();
+            id = role.getId().toString();
         }
 
-        byte[] secret = new byte[64];
-        new Random(Instant.now().toEpochMilli()).nextBytes(secret);
-        LocalDateTime issuedAt = LocalDateTime.now();
-        LocalDateTime expiresAt = issuedAt.plusWeeks(1);
+        byte[] secret;
+        LocalDateTime issuedAt;
+        LocalDateTime expiresAt;
+        if (isAdmin && status == TokenStatus.GENERATE) {
+            secret = role.getTokenSecret();
+            issuedAt = role.getTokenExpired().minusWeeks(1);
+            expiresAt = role.getTokenExpired();
+        } else {
+            secret = new byte[64];
+            new Random(Instant.now().toEpochMilli()).nextBytes(secret);
+            issuedAt = LocalDateTime.now();
+            expiresAt = issuedAt.plusWeeks(1);
+        }
+
 
         Algorithm algorithm = Algorithm.HMAC512(secret);
+
         String token = JWT.create()
                 .withIssuer("pi-studio")
                 .withIssuedAt(Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant()))
                 .withExpiresAt(Date.from(expiresAt.atZone(ZoneId.systemDefault()).toInstant()))
                 .withNotBefore(Date.from(issuedAt.atZone(ZoneId.systemDefault()).toInstant()))
-                .withAudience(id.toString())
+                .withAudience(id)
                 .sign(algorithm);
 
-        if (status == TokenStatus.NEW) {
-            user.setId(id);
+        if (!isAdmin || status != TokenStatus.GENERATE) {
+            if (status == TokenStatus.NEW) {
+                role.setId(UUID.fromString(id));
+            }
+            role.setTokenExpired(expiresAt);
+            role.setTokenSecret(secret);
         }
-        user.setTokenExpired(expiresAt);
-        user.setTokenSecret(secret);
+        return token;
+    }
+
+    public String adminLogin(String username, String password) throws IllegalAdminException {
+        Admin admin = adminRepository.findAdminByUsername(username);
+        if (admin == null || !bCryptPasswordEncoder.matches(password, admin.getPassword())) {
+            throw new IllegalAdminException();
+        }
+        String token;
+        if (admin.getTokenExpired().isBefore(LocalDateTime.now())) {
+            token = generateToken(admin, TokenStatus.RENEW);
+            adminRepository.save(admin);
+        } else {
+            token = generateToken(admin, TokenStatus.GENERATE);
+        }
         return token;
     }
 
@@ -150,6 +185,5 @@ public class LoginService {
             this.tokenStatus = tokenStatus;
         }
     }
-
 
 }

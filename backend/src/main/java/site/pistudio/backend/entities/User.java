@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-public class User {
+public class User implements Role {
     @Id
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
@@ -19,10 +19,12 @@ public class User {
     private LocalDateTime tokenExpired;
     private byte[] tokenSecret;
 
+    @Override
     public UUID getId() {
         return id;
     }
 
+    @Override
     public void setId(UUID id) {
         this.id = id;
     }
@@ -43,18 +45,22 @@ public class User {
         this.registerDate = registerDate;
     }
 
+    @Override
     public LocalDateTime getTokenExpired() {
         return tokenExpired;
     }
 
+    @Override
     public void setTokenExpired(LocalDateTime tokenExpired) {
         this.tokenExpired = tokenExpired;
     }
 
+    @Override
     public byte[] getTokenSecret() {
         return tokenSecret;
     }
 
+    @Override
     public void setTokenSecret(byte[] tokenSecret) {
         this.tokenSecret = tokenSecret;
     }

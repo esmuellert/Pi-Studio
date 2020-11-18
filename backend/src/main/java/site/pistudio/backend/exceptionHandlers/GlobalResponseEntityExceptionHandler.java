@@ -20,7 +20,7 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler(value = InvalidTokenException.class) // given token is no longer valid
     protected ResponseEntity<String> handleInvalidToken(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token is invalid");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token is invalid " + e.getMessage());
     }
 
 

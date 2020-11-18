@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import site.pistudio.backend.exceptions.IllegalAdminException;
 import site.pistudio.backend.exceptions.InvalidCodeException;
 
 @ControllerAdvice
@@ -36,4 +37,11 @@ public class LoginServiceExceptionHandler extends ResponseEntityExceptionHandler
     protected ResponseEntity<String> handleCodeRepeated(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("please reboot the app");
     }
+
+    @ExceptionHandler(value = IllegalAdminException.class)
+    protected ResponseEntity<String> handleIllegalAdminLogin(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Username or password is invalid");
+    }
+
+
 }
