@@ -49,6 +49,6 @@ public class MessageService {
             throw new InvalidTokenException();
         }
         Pageable pageable = PageRequest.of(page, 5);
-        return messageRepository.findByOrder_OrderNumberOrderByTime(orderNumber, pageable);
+        return messageRepository.findByOrder_OrderNumberOrderByTimeDesc(orderNumber, pageable);
     }
 }

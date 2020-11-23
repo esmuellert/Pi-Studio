@@ -6,5 +6,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import site.pistudio.backend.entities.Message;
 
 public interface MessageRepository extends PagingAndSortingRepository<Message, Long> {
-    Page<Message> findByOrder_OrderNumberOrderByTime(long id, Pageable pageable);
+    Page<Message> findByOrder_OrderNumberOrderByTimeDesc(long id, Pageable pageable);
 }

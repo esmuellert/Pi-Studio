@@ -1,5 +1,6 @@
 package site.pistudio.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.aspectj.weaver.ast.Or;
 import site.pistudio.backend.utils.MessageSender;
 
@@ -21,6 +22,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "order_number")
+    @JsonIgnore
     private Order order;
 
     public long getId() {
