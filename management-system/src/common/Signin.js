@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-
+import { url } from "./utils";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -57,12 +57,13 @@ export default function SignIn() {
   useEffect(() => {
     let ignore = false;
     async function request() {
-      await axios.post("http://localhost:8080/login", {
-        token: localStorage.getItem("token"),
-      })
+      await axios
+        .post(`${url}/login`, {
+          token: localStorage.getItem("token"),
+        })
         .then((response) => {
-          if (!ignore){
-             history.push("/dashboard");
+          if (!ignore) {
+            history.push("/dashboard");
           }
         })
         .catch((error) => {
@@ -73,17 +74,18 @@ export default function SignIn() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [history]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const username = event.target.username.value;
     const password = event.target.password.value;
 
-    axios.post("http://localhost:8080/login", {
-      username: username,
-      password: password,
-    })
+    axios
+      .post(`${url}/login`, {
+        username: username,
+        password: password,
+      })
       .then((response) => {
         localStorage.setItem("token", response.data);
         history.push("/dashboard");
