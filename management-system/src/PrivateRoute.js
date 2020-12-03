@@ -3,25 +3,55 @@
 
 // If they are: they proceed to the page
 // If not: they are redirected to the login page.
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
-
+import url from "./utils";
 const PrivateRoute = ({ component: Component, ...rest }) => {
   // Add your own authentication on the below line.
-  const isLoggedIn = localStorage.getItem("token");
-
+  const [isAuthencated, setIsAuthencated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    let ignore = false;
+    async function request() {
+      await axios
+        .post(`${url()}/login`, {
+          token: localStorage.getItem("token"),
+        })
+        .then(() => {
+          if (!ignore) {
+            setIsAuthencated(true);
+            setIsLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setIsAuthencated(false);
+          setIsLoading(false);
+        });
+    }
+    request();
+    return () => {
+      ignore = true;
+    };
+  }, []);
   return (
     <Route
       {...rest}
-      render={(props) =>
-        isLoggedIn ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{ pathname: "/login", state: { from: props.location } }}
-          />
-        )
-      }
+      render={(props) => {
+        if (isLoading) {
+          return null;
+        }
+        if (isAuthencated) {
+          return <Component {...props} />;
+        } else {
+          return (
+            <Redirect
+              to={{ pathname: "/login", state: { from: props.location } }}
+            />
+          );
+        }
+      }}
     />
   );
 };

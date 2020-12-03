@@ -4,18 +4,18 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
-import PrivateRoute from "./PrivateRoute"
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/login" component={SignIn} />
         <PrivateRoute exact path="/dashboard" component={Dashboard} />
-        <Redirect path="*" to="/login"/>
+        <Route exact path="/login" component={SignIn} />
+        <Redirect path="*" to="/dashboard" />
       </Switch>
     </Router>
   );

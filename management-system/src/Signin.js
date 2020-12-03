@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useHistory } from "react-router-dom";
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -50,21 +51,39 @@ export default function SignIn() {
   const classes = useStyles();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const axios = require("axios").default;
+
   let history = useHistory();
 
-  
+  useEffect(() => {
+    let ignore = false;
+    async function request() {
+      await axios.post("http://localhost:8080/login", {
+        token: localStorage.getItem("token"),
+      })
+        .then((response) => {
+          if (!ignore){
+             history.push("/dashboard");
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    request();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const username = event.target.username.value;
     const password = event.target.password.value;
-    
-    axios
-      .post("http://localhost:8080/login", {
-        username: username,
-        password: password,
-      })
+
+    axios.post("http://localhost:8080/login", {
+      username: username,
+      password: password,
+    })
       .then((response) => {
         localStorage.setItem("token", response.data);
         history.push("/dashboard");
