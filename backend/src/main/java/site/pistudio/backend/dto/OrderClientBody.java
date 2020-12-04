@@ -15,6 +15,7 @@ public class OrderClientBody {
     private LocalDateTime orderedTime;
     private String phoneNumber;
     private String notes;
+    private String wechatId;
     private List<LocalDateTime> schedule;
 
     public long getOrderNumber() {
@@ -73,6 +74,14 @@ public class OrderClientBody {
         this.schedule = schedule;
     }
 
+    public String getWechatId() {
+        return wechatId;
+    }
+
+    public void setWechatId(String wechatId) {
+        this.wechatId = wechatId;
+    }
+
     public static OrderClientBody OrderToClientBody(Order order, List<Schedule> schedules) {
         OrderClientBody orderClientBody =  setBodyFromOrder(order);
         List<LocalDateTime> times = new ArrayList<>();
@@ -95,6 +104,7 @@ public class OrderClientBody {
         orderClientBody.setOrderStatus(order.getOrderStatus());
         orderClientBody.setPhoneNumber(order.getPhoneNumber());
         orderClientBody.setType(order.getType());
+        orderClientBody.setWechatId(order.getWechatId());
         return orderClientBody;
     }
 }

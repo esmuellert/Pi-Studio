@@ -8,43 +8,15 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "../common/Title";
 import axios from "axios";
-import { url } from "../common/utils";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import { url, formatFullTime, convertStatus } from "../common/utils";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import SendIcon from "@material-ui/icons/Send";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import StarBorder from "@material-ui/icons/StarBorder";
 
 // Generate Order Data
-function createData(
-  id,
-  orderDate,
-  status,
-  wechatId,
-  phone,
-  type,
-  schedule,
-  lastMessageTime
-) {
-  return {
-    id,
-    orderDate,
-    status,
-    wechatId,
-    phone,
-    type,
-    schedule,
-    lastMessageTime,
-  };
-}
 
 function preventDefault(event) {
   event.preventDefault();
@@ -56,10 +28,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Orders() {
+export default function OrdersList() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState({});
   useEffect(() => {
     let ignore = false;
     async function request() {
@@ -71,6 +43,20 @@ export default function Orders() {
         })
         .then((response) => {
           if (!ignore) {
+            response.data = response.data.map((data) => {
+              data.orderedTime = formatFullTime(data.orderedTime);
+              data.schedule = data.schedule.map((schedule) => {
+                schedule = formatFullTime(schedule);
+                return schedule;
+              });
+              data.orderStatus = convertStatus(data.orderStatus)
+              return data;
+            });
+            let opens = {};
+            response.data.forEach((element) => {
+              opens[element.orderNumber] = false;
+            });
+            setOpen(opens);
             setRows(response.data);
             console.log(response.data);
           }
@@ -84,8 +70,11 @@ export default function Orders() {
       ignore = true;
     };
   }, []);
-  const handleClick = () => {
-    setOpen(!open);
+  const handleClick = (e) => {
+    let opens = Object.assign({}, open);
+    opens[e.currentTarget.id] = !opens[e.currentTarget.id];
+    setOpen(opens);
+
   };
   return (
     <React.Fragment>
@@ -93,39 +82,54 @@ export default function Orders() {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>订单号</TableCell>
-            <TableCell>下单时间</TableCell>
-            <TableCell>订单状态</TableCell>
-            <TableCell>微信号</TableCell>
-            <TableCell>电话</TableCell>
-            <TableCell>拍摄类型</TableCell>
-            <TableCell>预约时间</TableCell>
-            <TableCell>最后留言时间</TableCell>
+            <TableCell align="center">订单号</TableCell>
+            <TableCell align="center">下单时间</TableCell>
+            <TableCell align="center">订单状态</TableCell>
+            <TableCell align="center">微信号</TableCell>
+            <TableCell align="center">电话</TableCell>
+            <TableCell align="center">拍摄类型</TableCell>
+            <TableCell align="center">预约时间</TableCell>
+            <TableCell align="center">最后留言时间</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.orderNumber}>
-              <TableCell>{row.orderNumber}</TableCell>
-              <TableCell>{row.orderedTime}</TableCell>
-              <TableCell>{row.orderStatus}</TableCell>
-              <TableCell>{row.wechatId}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
-              <TableCell>{row.type}</TableCell>
-              <TableCell>
-                <ListItem button onClick={handleClick}>
-                  <ListItemText primary="Inbox" />
-                  {open ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                <Collapse in={open} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    <ListItem button className={classes.nested}>
-                      <ListItemText primary="Starred" />
-                    </ListItem>
-                  </List>
-                </Collapse>
-              </TableCell>
-              <TableCell>{row.lastMessageTime}</TableCell>
+              <TableCell align="center">{row.orderNumber}</TableCell>
+              <TableCell align="center">{row.orderedTime}</TableCell>
+              <TableCell align="center">{row.orderStatus}</TableCell>
+              <TableCell align="center">{row.wechatId}</TableCell>
+              <TableCell align="center">{row.phoneNumber}</TableCell>
+              <TableCell align="center">{row.type}</TableCell>
+              {row.schedule.length > 1 ? (
+                <TableCell align="center">
+                  <ListItem button onClick={handleClick} id={row.orderNumber}>
+                    <ListItemText primary={row.schedule[0]} />
+                    {open[row.orderNumber] ? <ExpandLess /> : <ExpandMore />}
+                  </ListItem>
+                  <Collapse
+                    in={open[row.orderNumber]}
+                    timeout="auto"
+                    unmountOnExit
+                  >
+                    <List component="div" disablePadding>
+                      {row.schedule.map((schedule) => (
+                        <ListItem button className={classes.nested} key={schedule}>
+                          <ListItemText primary={schedule} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Collapse>
+                </TableCell>
+              ) : (
+                <TableCell align="center">
+                  {" "}
+                  <ListItem button onClick={handleClick} id={row.orderNumber}>
+                    <ListItemText primary={row.schedule[0]} />
+                  </ListItem>
+                </TableCell>
+              )}
+              <TableCell align="center">{row.lastMessageTime}</TableCell>
             </TableRow>
           ))}
         </TableBody>

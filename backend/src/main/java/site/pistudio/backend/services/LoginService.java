@@ -99,10 +99,10 @@ public class LoginService {
         return responseMap.get("openid");
     }
 
-    private Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
+    public Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         String appId = "wxd79dee47f1d31c2e";
-        String secret = "62afde5eb0c2e61981b018354608e5e4";
+        String secret = "1b07d6b1ef8bb959442de144bb4d5e4b";
         String grantType = "authorization_code";
         url = url + "?" + "appid=" + appId + "&" + "secret=" + secret + "&" + "js_code=" + code + "&" + "grant_type"
                 + "=" + grantType;
