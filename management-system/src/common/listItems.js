@@ -12,21 +12,19 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import { Link } from "react-router-dom";
 export const mainListItems = (
   <div>
+    <ListItem button component={Link} to={"/dashboard"}>
+      <ListItemIcon>
+        <DashboardIcon />
+      </ListItemIcon>
+      <ListItemText primary="Dashboard" />
+    </ListItem>
 
-      <ListItem button component={Link} to={'/dashboard'}>
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Dashboard" />
-      </ListItem>
-
-
-      <ListItem button component={Link} to={'/orders'}>
-        <ListItemIcon>
-          <ShoppingCartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Orders" />
-      </ListItem>
+    <ListItem button component={Link} to={"/orders"}>
+      <ListItemIcon>
+        <ShoppingCartIcon />
+      </ListItemIcon>
+      <ListItemText primary="Orders" />
+    </ListItem>
 
     <ListItem button>
       <ListItemIcon>

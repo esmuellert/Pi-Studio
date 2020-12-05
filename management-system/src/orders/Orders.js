@@ -20,9 +20,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "../common/listItems";
 import OrdersList from "./OrdersList";
 import Copyright from "../common/Copyright";
-import {Widget} from "react-chat-widget";
-import 'react-chat-widget/lib/styles.css';
-
+import "react-chat-widget/lib/styles.css";
 
 const drawerWidth = 240;
 
@@ -184,7 +182,6 @@ export default function Orders() {
           </Box>
         </Container>
       </main>
-      <Widget />
     </div>
   );
 }

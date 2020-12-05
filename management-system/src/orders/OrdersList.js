@@ -9,13 +9,17 @@ import TableRow from "@material-ui/core/TableRow";
 import Title from "../common/Title";
 import axios from "axios";
 import { url, formatFullTime, convertStatus } from "../common/utils";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Collapse from "@material-ui/core/Collapse";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import Input from "@material-ui/core/Input";
+import ChatIcon from "@material-ui/icons/Chat";
+import DoneIcon from "@material-ui/icons/Done";
+import { Button } from "@material-ui/core";
+import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
+import ImageIcon from "@material-ui/icons/Image";
+import PublishIcon from "@material-ui/icons/Publish";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 // Generate Order Data
 
 function preventDefault(event) {
@@ -26,12 +30,13 @@ const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
   },
+  icon: { display: "none" },
 }));
 
 export default function OrdersList() {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
-  const [open, setOpen] = useState({});
+  const [schedule, setSchedule] = useState({});
   useEffect(() => {
     let ignore = false;
     async function request() {
@@ -43,20 +48,11 @@ export default function OrdersList() {
         })
         .then((response) => {
           if (!ignore) {
-            response.data = response.data.map((data) => {
-              data.orderedTime = formatFullTime(data.orderedTime);
-              data.schedule = data.schedule.map((schedule) => {
-                schedule = formatFullTime(schedule);
-                return schedule;
-              });
-              data.orderStatus = convertStatus(data.orderStatus)
-              return data;
-            });
-            let opens = {};
+            let schedules = {};
             response.data.forEach((element) => {
-              opens[element.orderNumber] = false;
+              schedules[element.orderNumber] = element.schedule[0];
             });
-            setOpen(opens);
+            setSchedule(schedules);
             setRows(response.data);
             console.log(response.data);
           }
@@ -70,11 +66,15 @@ export default function OrdersList() {
       ignore = true;
     };
   }, []);
-  const handleClick = (e) => {
-    let opens = Object.assign({}, open);
-    opens[e.currentTarget.id] = !opens[e.currentTarget.id];
-    setOpen(opens);
 
+  const handleScheduleChange = (event) => {
+    let schedules = Object.assign({}, schedule);
+    schedules[event.currentTarget.id] = event.target.value;
+    setSchedule(schedules);
+  };
+
+  const handleStatusChange = (event) => {
+    console.log(event.currentTarget);
   };
   return (
     <React.Fragment>
@@ -89,47 +89,105 @@ export default function OrdersList() {
             <TableCell align="center">电话</TableCell>
             <TableCell align="center">拍摄类型</TableCell>
             <TableCell align="center">预约时间</TableCell>
-            <TableCell align="center">最后留言时间</TableCell>
+            <TableCell align="center">操作</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.orderNumber}>
               <TableCell align="center">{row.orderNumber}</TableCell>
-              <TableCell align="center">{row.orderedTime}</TableCell>
-              <TableCell align="center">{row.orderStatus}</TableCell>
+              <TableCell align="center">
+                {formatFullTime(row.orderedTime)}
+              </TableCell>
+              <TableCell align="center">
+                {convertStatus(row.orderStatus)}
+              </TableCell>
               <TableCell align="center">{row.wechatId}</TableCell>
               <TableCell align="center">{row.phoneNumber}</TableCell>
               <TableCell align="center">{row.type}</TableCell>
-              {row.schedule.length > 1 ? (
-                <TableCell align="center">
-                  <ListItem button onClick={handleClick} id={row.orderNumber}>
-                    <ListItemText primary={row.schedule[0]} />
-                    {open[row.orderNumber] ? <ExpandLess /> : <ExpandMore />}
-                  </ListItem>
-                  <Collapse
-                    in={open[row.orderNumber]}
-                    timeout="auto"
-                    unmountOnExit
-                  >
-                    <List component="div" disablePadding>
-                      {row.schedule.map((schedule) => (
-                        <ListItem button className={classes.nested} key={schedule}>
-                          <ListItemText primary={schedule} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Collapse>
-                </TableCell>
-              ) : (
-                <TableCell align="center">
-                  {" "}
-                  <ListItem button onClick={handleClick} id={row.orderNumber}>
-                    <ListItemText primary={row.schedule[0]} />
-                  </ListItem>
-                </TableCell>
-              )}
-              <TableCell align="center">{row.lastMessageTime}</TableCell>
+
+              {(() => {
+                if (row.schedule.length > 1 || row.orderStatus !== "PLACED") {
+                  return (
+                    <TableCell align="center">
+                      <FormControl>
+                        <Select
+                          value={schedule[row.orderNumber]}
+                          onChange={handleScheduleChange}
+                        >
+                          {row.schedule.map((schedule) => (
+                            <MenuItem
+                              id={row.orderNumber}
+                              key={schedule}
+                              value={schedule}
+                            >
+                              {formatFullTime(schedule)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>{" "}
+                    </TableCell>
+                  );
+                } else {
+                  return (
+                    <TableCell align="center">
+                      <Select
+                        input={<Input disableUnderline />}
+                        value={formatFullTime(row.schedule[0])}
+                        classes={{
+                          icon: classes.icon,
+                        }}
+                      >
+                        <MenuItem value={formatFullTime(row.schedule[0])}>
+                          {formatFullTime(row.schedule[0])}
+                        </MenuItem>
+                      </Select>
+                    </TableCell>
+                  );
+                }
+              })()}
+
+              <TableCell align="center">
+                {" "}
+                {(() => {
+                  switch (row.orderStatus) {
+                    case "PLACED":
+                      return (
+                        <Button onClick={handleStatusChange}>
+                          <PlayArrowIcon color="primary" />
+                        </Button>
+                      );
+                    case "RECEIVED":
+                      return (
+                        <Button onClick={handleStatusChange}>
+                          <PhotoCameraIcon color="primary" />
+                        </Button>
+                      );
+                    case "IMAGING":
+                      return (
+                        <Button onClick={handleStatusChange}>
+                          <ImageIcon color="primary" />
+                        </Button>
+                      );
+                    case "PROCESSING":
+                      return (
+                        <Button onClick={handleStatusChange}>
+                          <DoneIcon color="primary" />
+                        </Button>
+                      );
+                    default:
+                      return null;
+                  }
+                })()}{" "}
+                {row.orderStatus === "PROCESSING" ? (
+                  <Button>
+                    <PublishIcon color="primary" />
+                  </Button>
+                ) : null}
+                <Button>
+                  <ChatIcon color="primary" />
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

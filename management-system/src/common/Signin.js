@@ -67,7 +67,7 @@ export default function SignIn() {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error.response);
         });
     }
     request();
@@ -90,8 +90,11 @@ export default function SignIn() {
         localStorage.setItem("token", response.data);
         history.push("/dashboard");
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch((error) => {
+        console.log(error.response);
+        if (error.response.status === 403) {
+          alert(error.response.data);
+        }
       });
   };
 

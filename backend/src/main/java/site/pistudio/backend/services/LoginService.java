@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +27,8 @@ import java.util.*;
 
 @Service
 public class LoginService {
+    @Value("${appSecret}")
+    private String appSecret;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AdminRepository adminRepository;
@@ -102,7 +105,7 @@ public class LoginService {
     public Map<String, String> requestForOpenId(String code) throws JsonProcessingException {
         String url = "https://api.weixin.qq.com/sns/jscode2session";
         String appId = "wxd79dee47f1d31c2e";
-        String secret = "1b07d6b1ef8bb959442de144bb4d5e4b";
+        String secret = appSecret;
         String grantType = "authorization_code";
         url = url + "?" + "appid=" + appId + "&" + "secret=" + secret + "&" + "js_code=" + code + "&" + "grant_type"
                 + "=" + grantType;

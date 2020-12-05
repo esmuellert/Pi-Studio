@@ -21,9 +21,7 @@ import { mainListItems, secondaryListItems } from "../common/listItems";
 import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
-import Copyright from "../common/Copyright"
-
-
+import Copyright from "../common/Copyright";
 
 const drawerWidth = 240;
 
