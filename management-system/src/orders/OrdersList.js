@@ -20,6 +20,7 @@ import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import ImageIcon from "@material-ui/icons/Image";
 import PublishIcon from "@material-ui/icons/Publish";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+
 // Generate Order Data
 
 function preventDefault(event) {
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   icon: { display: "none" },
 }));
 
-export default function OrdersList() {
+export default function OrdersList(props) {
   const classes = useStyles();
   const [rows, setRows] = useState([]);
   const [schedule, setSchedule] = useState({});
@@ -74,8 +75,9 @@ export default function OrdersList() {
   };
 
   const handleStatusChange = (event) => {
-    console.log(event.currentTarget);
+    console.log(props);
   };
+
   return (
     <React.Fragment>
       <Title>Recent Orders</Title>
@@ -184,7 +186,7 @@ export default function OrdersList() {
                     <PublishIcon color="primary" />
                   </Button>
                 ) : null}
-                <Button>
+                <Button onClick={props.onClickChatIcon} id={row.orderNumber}>
                   <ChatIcon color="primary" />
                 </Button>
               </TableCell>

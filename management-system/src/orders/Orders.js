@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -21,6 +21,7 @@ import { mainListItems, secondaryListItems } from "../common/listItems";
 import OrdersList from "./OrdersList";
 import Copyright from "../common/Copyright";
 import "react-chat-widget/lib/styles.css";
+import Chat from "../chat/Chat";
 
 const drawerWidth = 240;
 
@@ -105,12 +106,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Orders() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [drawOpen, setDrawOpen] = React.useState(false);
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setDrawOpen(true);
   };
   const handleDrawerClose = () => {
-    setOpen(false);
+    setDrawOpen(false);
+  };
+
+  const [chatOrderNumber, setChatOrderNumber] = useState();
+  const handleOpenChat = (event) => {
+    setChatOrderNumber(event.currentTarget.id);
+    console.log(event.currentTarget);
   };
 
   return (
@@ -118,7 +125,7 @@ export default function Orders() {
       <CssBaseline />
       <AppBar
         position="absolute"
-        className={clsx(classes.appBar, open && classes.appBarShift)}
+        className={clsx(classes.appBar, drawOpen && classes.appBarShift)}
       >
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -128,7 +135,7 @@ export default function Orders() {
             onClick={handleDrawerOpen}
             className={clsx(
               classes.menuButton,
-              open && classes.menuButtonHidden
+              drawOpen && classes.menuButtonHidden
             )}
           >
             <MenuIcon />
@@ -152,9 +159,12 @@ export default function Orders() {
       <Drawer
         variant="permanent"
         classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          paper: clsx(
+            classes.drawerPaper,
+            !drawOpen && classes.drawerPaperClose
+          ),
         }}
-        open={open}
+        open={drawOpen}
       >
         <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose}>
@@ -173,7 +183,7 @@ export default function Orders() {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <OrdersList />
+                <OrdersList onClickChatIcon={handleOpenChat} />
               </Paper>
             </Grid>
           </Grid>
@@ -182,6 +192,7 @@ export default function Orders() {
           </Box>
         </Container>
       </main>
+      <Chat />
     </div>
   );
 }
