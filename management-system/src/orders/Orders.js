@@ -20,7 +20,6 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import { mainListItems, secondaryListItems } from "../common/listItems";
 import OrdersList from "./OrdersList";
 import Copyright from "../common/Copyright";
-import "react-chat-widget/lib/styles.css";
 import Chat from "../chat/Chat";
 
 const drawerWidth = 240;
