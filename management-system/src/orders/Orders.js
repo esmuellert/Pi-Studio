@@ -116,9 +116,75 @@ export default function Orders() {
   const [chatOrderNumber, setChatOrderNumber] = useState();
   const handleOpenChat = (event) => {
     setChatOrderNumber(event.currentTarget.id);
+    setDisplayChatWidget(true);
     console.log(event.currentTarget);
   };
 
+  const handleCloseChat = (event) => {
+    setDisplayChatWidget(false);
+  };
+
+  const [displayChatWidget, setDisplayChatWidget] = useState(false);
+  const [messages, setMessages] = useState([
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "left",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-07T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-06T12:03:09.737"),
+    },    {
+      position: "left",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-07T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-06T12:03:09.737"),
+    },    {
+      position: "left",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-07T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-06T12:03:09.737"),
+    },    {
+      position: "left",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-07T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      date: new Date("2020-12-06T12:03:09.737"),
+    },
+  ]);
+  
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -191,7 +257,9 @@ export default function Orders() {
           </Box>
         </Container>
       </main>
-      <Chat />
+      {displayChatWidget ? (
+        <Chat id={chatOrderNumber} onClose={handleCloseChat} messages={messages} />
+      ) : null}
     </div>
   );
 }

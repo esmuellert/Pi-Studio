@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MessageList } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
-
+import Avatar from "@material-ui/core/Avatar";
+import chatPng from "./chat.png";
+import { Typography, Button, TextField } from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import SendIcon from "@material-ui/icons/Send";
 const useStyles = makeStyles({
   container: {
     border: "0px",
     backgroundColor: "transparent",
-    pointerEvents: "none",
     zIndex: 42342424,
     position: "fixed",
     bottom: "0px",
@@ -24,60 +27,91 @@ const useStyles = makeStyles({
   bodyWrapper: {
     position: "relative",
     height: "100%",
+    margin: "80px 25px 20px 20px",
+    boxShadow: "0 4px 16px rgba(0,0,0,.25)",
+    borderRadius: "15px",
+    overflow: "hidden",
     display: "flex",
-    margin: "100px 25px 20px 20px",
     flexDirection: "column",
   },
-  head: {},
+  head: {
+    display: "flex",
+    background: "rgb(255, 255, 255)",
+    padding: "0 20px",
+    flex: "0 0 80px",
+    alignItems: "center",
+  },
+  avatarWrapper: {
+    marginRight: "22px",
+  },
+  closeWrapper: {
+    position: "absolute",
+    top: "18px",
+    right: "18px",
+  },
+  closeButton: {
+    padding: 0,
+    minWidth: 0,
+  },
   body: {
     background: "rgb(234, 238, 243)",
-    padding: "20px",
-    height: "100%",
+    padding: "10px",
+    flex: "1 1 auto",
     display: "flex",
-    borderRadius:"10px",
+    overflowY: "auto",
   },
-  textArea: {},
+  textWrapper: {
+    display: "flex",
+    background: "rgb(255, 255, 255)",
+
+    flex: "0 0 60px",
+    alignItems: "center",
+    borderTop: "1px solid",
+    borderTopColor: "rgb(234,234,234)",
+  },
+  textArea: { padding: "0 0 5px 20px", flex: "1 0 auto" },
 });
 
-export default function Chat() {
+export default function Chat(props) {
   const classes = useStyles();
-  const [messages, setMessages] = useState([
-    {
-      position: "right",
-      type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-      date: new Date("2020-12-04T12:03:09.737"),
-    },
-    {
-      position: "right",
-      type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-      date: new Date("2020-12-04T12:03:09.737"),
-    },
-    {
-      position: "left",
-      type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-      date: new Date("2020-12-07T12:03:09.737"),
-    },
-    {
-      position: "right",
-      type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-      date: new Date("2020-12-06T12:03:09.737"),
-    },
-  ]);
+
   return (
     <div className={classes.container}>
       <div className={classes.bodyWrapper}>
+        <div className={classes.head}>
+          <div className={classes.closeWrapper}>
+            <Button className={classes.closeButton} onClick={props.onClose}>
+              <CloseIcon />
+            </Button>
+          </div>
+          <div className={classes.avatarWrapper}>
+            <Avatar variant="square" alt="Chat Icon" src={chatPng} />
+          </div>
+
+          <Typography variant="h6">Order {props.id}</Typography>
+        </div>
         <div className={classes.body}>
-          {" "}
           <MessageList
             className="message-list"
             lockable={true}
-            toBottomHeight={"100%"}
-            dataSource={messages}
+            dataSource={props.messages}
+            toBottomHeight="100%"
           />
+        </div>
+        <div className={classes.textWrapper}>
+          <div className={classes.textArea}>
+            {" "}
+            <TextField
+              id="standard-basic"
+              label="Message"
+              fullWidth
+              multiline
+            />
+          </div>
+
+          <Button>
+            <SendIcon />
+          </Button>
         </div>
       </div>
     </div>
