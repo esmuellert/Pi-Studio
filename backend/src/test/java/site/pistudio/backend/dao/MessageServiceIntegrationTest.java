@@ -22,14 +22,14 @@ public class MessageServiceIntegrationTest {
     @Test
     public void sendMessages() {
         String[] tokens = new String[]{"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9" +
-                ".eyJhdWQiOiJlNDExYjlkNS01Nzg4LTQwOGYtYWNiMS0yMGRiYzJjNjI3NjYiLCJuYmYiOjE2MDU3MDIzNzEsImlzcyI6InBpLXN0dWRpbyIsImV4cCI6MTYwNjMwNzE3MSwiaWF0IjoxNjA1NzAyMzcxfQ.EGPvbrk7-OCSL85OZ0G73baM3Xvp2cZDOEz4ivB2-Li2ehSDWrAYSc3slMet9RECN_KMpiPeBTp66OiMe2ZSGA",
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9" +
-                        ".eyJhdWQiOiJ5YW51byIsIm5iZiI6MTYwNTc2OTM3NSwiaXNzIjoicGktc3R1ZGlvIiwiZXhwIjoxNjA2Mzc0MTc1LCJpYXQiOjE2MDU3NjkzNzV9.pu-uamivT5BuX6Q2zHLgZBhZIdHeHcu6LA3p6Ib9ppDCBIoOOBLb31hHsZqMUATpxVmwN3cnrnvXkHxKgnEx6w"};
+                ".eyJhdWQiOiJlNDExYjlkNS01Nzg4LTQwOGYtYWNiMS0yMGRiYzJjNjI3NjYiLCJuYmYiOjE2MDcwNTMzNjAsImlzcyI6InBpLXN0dWRpbyIsImV4cCI6MTYwNzY1ODE2MCwiaWF0IjoxNjA3MDUzMzYwfQ.4Pr3ytLVfUo7Xm2aw7GomYTGzANSULTyMy8XzlLiFSne3flWr7Ue0UjUcYjYXRZBkw0HYZf8rzAAxQMLZ6ekZA", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJhdWQiOiJ5YW51byIsIm5iZiI6MTYwNzQwOTcyOCwiaXNzIjoicGktc3R1ZGlvIiwiZXhwIjoxNjA4MDE0NTI4LCJpYXQiOjE2MDc0MDk3Mjh9.Bzh6ruvjT9oRhXkzIwUiAlu6qd6ZexfMUaM3GyvuJnvzUDTC_C-BmE79hagSDfm1ut2JxVYGgCIYdigd8tzoJg"};
         Random random = new Random();
         for (int i = 0; i < 82; i++) {
             int number = random.nextInt(2);
             messageService
-                    .receiveMessage("test message" + i, 20323218021L, verifyTokenService.verifyToken(tokens[number]));
+                    .receiveMessage("test " +
+                                    "messagffasfsafasfsafasfasfsafasfasdfdsfasfsdfasdfdsafsafdsfsafsdfasdfdasdfasfasfe" + i,
+                            20339117866L, verifyTokenService.verifyToken(tokens[number]));
         }
     }
 }

@@ -8,8 +8,12 @@ import site.pistudio.backend.dto.OrderForm;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.OrderService;
 import site.pistudio.backend.services.VerifyTokenService;
+import site.pistudio.backend.utils.OrderStatus;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
@@ -49,16 +53,19 @@ public class OrderController {
         }
         return orderService.getOrdersByOpenId(openId);
     }
-
-//    @GetMapping("/{openId}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public List<OrderClientBody> getOrderByOpenId(@RequestHeader(name = "Authorization") String token,
-//                                                  @PathVariable("openId") String openId) {
-//        if (!verifyTokenService.verifyToken(token).equals("admin")) {
-//            throw new InvalidTokenException();
-//        }
-//        return orderService.getOrdersByOpenId(openId);
-//    }
+    @Transactional
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public OrderClientBody setOrderStatus(@RequestHeader(name = "Authorization") String token,
+                                          @RequestBody Map<String, String> body,
+                                              @PathVariable(name = "id") Long id) {
+        String openId = verifyTokenService.verifyToken(token);
+        if (!openId.equals("admin")) {
+            throw new InvalidTokenException();
+        }
+        LocalDateTime schedule = LocalDateTime.parse(body.get("schedule"));
+        return orderService.setOrderStatus(schedule, id);
+    }
 
 
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MessageList } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
@@ -60,10 +60,12 @@ const useStyles = makeStyles({
     display: "flex",
     overflowY: "auto",
   },
+  messageList: {
+    width: "100%",
+  },
   textWrapper: {
     display: "flex",
     background: "rgb(255, 255, 255)",
-
     flex: "0 0 60px",
     alignItems: "center",
     borderTop: "1px solid",
@@ -74,6 +76,9 @@ const useStyles = makeStyles({
 
 export default function Chat(props) {
   const classes = useStyles();
+  const handleScroll = (event) => {
+    console.log(event.target.scrollTop);
+  };
 
   return (
     <div className={classes.container}>
@@ -92,10 +97,10 @@ export default function Chat(props) {
         </div>
         <div className={classes.body}>
           <MessageList
-            className="message-list"
+            className={classes.messageList}
             lockable={true}
             dataSource={props.messages}
-            toBottomHeight="100%"
+            toBottomHeight="0"
           />
         </div>
         <div className={classes.textWrapper}>
@@ -106,10 +111,13 @@ export default function Chat(props) {
               label="Message"
               fullWidth
               multiline
+              onChange={props.onMessageTextChange}
+              value={props.messageText}
+              onKeyDown={props.onEnterDown}
             />
           </div>
 
-          <Button>
+          <Button onClick={props.onSendMessage}>
             <SendIcon />
           </Button>
         </div>

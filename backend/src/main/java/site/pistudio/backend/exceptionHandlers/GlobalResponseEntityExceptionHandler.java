@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 
 @ControllerAdvice
@@ -23,5 +22,9 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("The token is invalid!");
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)  // all illegalArgumentException, give information 400
+    protected ResponseEntity<String> handleIllegalArgument(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 
 }

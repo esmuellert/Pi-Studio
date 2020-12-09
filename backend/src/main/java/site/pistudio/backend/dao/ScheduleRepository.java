@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import site.pistudio.backend.entities.Schedule;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -13,4 +14,8 @@ public interface ScheduleRepository extends CrudRepository<Schedule, Long> {
 //            nativeQuery =
 //                    true)
     List<Schedule> findSchedulesByOrder_OrderNumberOrderByTime(long id);
+
+    void deleteScheduleByOrder_OrderNumberAndTimeNotIn(long id, List<LocalDateTime> schedule);
+
+    Schedule findScheduleByOrder_OrderNumberAndTime(long id, LocalDateTime time);
 }

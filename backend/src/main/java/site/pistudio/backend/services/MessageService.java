@@ -12,6 +12,7 @@ import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.MessageSender;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MessageService {
@@ -49,6 +50,14 @@ public class MessageService {
             throw new InvalidTokenException();
         }
         Pageable pageable = PageRequest.of(page, 5);
-        return messageRepository.findByOrder_OrderNumberOrderByTimeDesc(orderNumber, pageable);
+        return messageRepository.findByOrder_OrderNumberOrderByTimeAsc(orderNumber, pageable);
+    }
+
+    public List<Message> getMessages(long orderNumber, String openId) {
+        Order order = orderRepository.findByOrderNumber(orderNumber);
+        if (!openId.equals("admin") && !openId.equals(order.getOpenId())) {
+            throw new InvalidTokenException();
+        }
+        return messageRepository.findByOrder_OrderNumberOrderByTimeAsc(orderNumber);
     }
 }

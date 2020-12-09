@@ -43,4 +43,21 @@ const convertStatus = (status) => {
       break;
   }
 };
-export { url, formatFullTime, convertStatus };
+
+const formatMessage = (rawMessage) => {
+  let messages = [];
+  rawMessage.forEach(element => {
+    let message = {};
+    if (element.messageSender === "USER") {
+      message.position = "left";
+    } else {
+      message.position = "right";
+    }
+    message.type = "text";
+    message.text = element.message;
+    message.date = new Date(element.time);
+    messages.push(message);
+  });
+  return messages
+}
+export { url, formatFullTime, convertStatus, formatMessage };

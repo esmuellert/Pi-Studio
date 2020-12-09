@@ -1,5 +1,6 @@
 package site.pistudio.backend.services;
 
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.dao.ScheduleRepository;
@@ -10,6 +11,7 @@ import site.pistudio.backend.entities.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.OrderStatus;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -91,6 +93,36 @@ public class OrderService {
             orderClientBodies.add(OrderClientBody.OrderToClientBody(order, schedules));
         }
         return orderClientBodies;
+    }
+
+    public OrderClientBody setOrderStatus(LocalDateTime schedule, Long orderNumber) {
+        Order order = orderRepository.findByOrderNumber(orderNumber);
+        List<LocalDateTime> schedules = new ArrayList<>();
+        schedules.add(schedule);
+        switch (order.getOrderStatus()) {
+            case PLACED:
+                if (scheduleRepository.findScheduleByOrder_OrderNumberAndTime(orderNumber, schedule) == null) {
+                    throw new IllegalArgumentException("Provided schedule is invalid!");
+                }
+                order.setOrderStatus(OrderStatus.RECEIVED);
+                scheduleRepository.deleteScheduleByOrder_OrderNumberAndTimeNotIn(orderNumber, schedules);
+                break;
+            case RECEIVED:
+                order.setOrderStatus(OrderStatus.IMAGING);
+                break;
+            case IMAGING:
+                order.setOrderStatus(OrderStatus.PROCESSING);
+                break;
+            case PROCESSING:
+                order.setOrderStatus(OrderStatus.FINISHED);
+                break;
+            default:
+                throw new IllegalArgumentException("Order status is not valid!");
+        }
+
+        orderRepository.save(order);
+        return OrderClientBody.OrderToClientBody(order,
+                scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(orderNumber));
     }
 
 

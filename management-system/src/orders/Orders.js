@@ -21,6 +21,8 @@ import { mainListItems, secondaryListItems } from "../common/listItems";
 import OrdersList from "./OrdersList";
 import Copyright from "../common/Copyright";
 import Chat from "../chat/Chat";
+import axios from "axios";
+import { url, formatMessage } from "../common/utils";
 
 const drawerWidth = 240;
 
@@ -115,13 +117,57 @@ export default function Orders() {
 
   const [chatOrderNumber, setChatOrderNumber] = useState();
   const handleOpenChat = (event) => {
+    axios
+      .get(`${url}/message/${event.currentTarget.id}`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      })
+      .then((response) => {
+        setMessages(formatMessage(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     setChatOrderNumber(event.currentTarget.id);
     setDisplayChatWidget(true);
     console.log(event.currentTarget);
   };
 
   const handleCloseChat = (event) => {
+    setMessages([]);
     setDisplayChatWidget(false);
+  };
+
+  const handleSendMessage = () => {
+    axios
+      .post(
+        `${url}/message`,
+        {
+          orderNumber: chatOrderNumber,
+          message: messageText,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      )
+      .then(() => {
+        let messageList = messages.map((x) => x);
+        messageList.push({
+          position: "right",
+          type: "text",
+          text: messageText,
+          date: new Date(),
+        });
+        setMessages(messageList);
+        setMessageText("");
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("发送失败，请重试！");
+      });
   };
 
   const [displayChatWidget, setDisplayChatWidget] = useState(false);
@@ -129,62 +175,117 @@ export default function Orders() {
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-04T12:03:09.737"),
     },
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
+      date: new Date("2020-12-04T12:03:09.737"),
+    },
+    {
+      position: "right",
+      type: "text",
+      text: "Lor",
       date: new Date("2020-12-04T12:03:09.737"),
     },
     {
       position: "left",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-07T12:03:09.737"),
     },
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-06T12:03:09.737"),
-    },    {
+    },
+    {
       position: "left",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-07T12:03:09.737"),
     },
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-06T12:03:09.737"),
-    },    {
+    },
+    {
       position: "left",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-07T12:03:09.737"),
     },
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-06T12:03:09.737"),
-    },    {
+    },
+    {
       position: "left",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-07T12:03:09.737"),
     },
     {
       position: "right",
       type: "text",
-      text: "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+      text: "Lor",
       date: new Date("2020-12-06T12:03:09.737"),
     },
   ]);
-  
+  const [messageText, setMessageText] = useState("");
+  const handleMessageTextChange = (event) => {
+    setMessageText(event.target.value);
+  };
+
+  const handleEnterDown = (event) => {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      handleSendMessage();
+    }
+  };
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -258,7 +359,15 @@ export default function Orders() {
         </Container>
       </main>
       {displayChatWidget ? (
-        <Chat id={chatOrderNumber} onClose={handleCloseChat} messages={messages} />
+        <Chat
+          id={chatOrderNumber}
+          onClose={handleCloseChat}
+          messages={messages}
+          onSendMessage={handleSendMessage}
+          onMessageTextChange={handleMessageTextChange}
+          messageText={messageText}
+          onEnterDown={handleEnterDown}
+        />
       ) : null}
     </div>
   );

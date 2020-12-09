@@ -75,8 +75,12 @@ export default function OrdersList(props) {
   };
 
   const handleStatusChange = (event) => {
-    console.log(props);
+    console.log(event.currentTarget);
   };
+
+  const handlePlacedOrder = (event) => {
+    
+  }
 
   return (
     <React.Fragment>
@@ -109,7 +113,7 @@ export default function OrdersList(props) {
               <TableCell align="center">{row.type}</TableCell>
 
               {(() => {
-                if (row.schedule.length > 1 || row.orderStatus !== "PLACED") {
+                if (row.schedule.length > 1 || row.orderStatus === "PLACED") {
                   return (
                     <TableCell align="center">
                       <FormControl>
@@ -155,7 +159,7 @@ export default function OrdersList(props) {
                   switch (row.orderStatus) {
                     case "PLACED":
                       return (
-                        <Button onClick={handleStatusChange}>
+                        <Button onClick={handleStatusChange} id={row.orderNumber}>
                           <PlayArrowIcon color="primary" />
                         </Button>
                       );

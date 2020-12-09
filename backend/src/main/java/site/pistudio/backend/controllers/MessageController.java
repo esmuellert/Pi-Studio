@@ -34,9 +34,13 @@ public class MessageController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Message> getMessages(@RequestParam("page") int page, @PathVariable("id") long orderNumber,
+    public Iterable<Message> getMessages(@RequestParam(name = "page", required = false) Integer page,
+                                         @PathVariable("id") long orderNumber,
                                      @RequestHeader(name = "Authorization") String token) {
         String openId = verifyTokenService.verifyToken(token);
+        if (page == null) {
+            return messageService.getMessages(orderNumber, openId);
+        }
         return messageService.getMessages(orderNumber, page, openId);
     }
 }
