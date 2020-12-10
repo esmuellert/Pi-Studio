@@ -1,6 +1,5 @@
 package site.pistudio.backend.services;
 
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.OrderRepository;
 import site.pistudio.backend.dao.ScheduleRepository;
@@ -11,13 +10,9 @@ import site.pistudio.backend.entities.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.OrderStatus;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class OrderService {
@@ -71,7 +66,8 @@ public class OrderService {
         if (!openId.equals(order.getOpenId()) && !openId.equals("admin")) {
             throw new InvalidTokenException(openId);
         }
-        List<Schedule> schedules = scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+        List<Schedule> schedules = scheduleRepository
+                .findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
         return OrderClientBody.OrderToClientBody(order, schedules);
     }
 
@@ -97,13 +93,15 @@ public class OrderService {
 
     public OrderClientBody setOrderStatus(LocalDateTime schedule, Long orderNumber) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
-        List<LocalDateTime> schedules = new ArrayList<>();
-        schedules.add(schedule);
+
         switch (order.getOrderStatus()) {
             case PLACED:
-                if (scheduleRepository.findScheduleByOrder_OrderNumberAndTime(orderNumber, schedule) == null) {
+                if (schedule == null ||
+                        scheduleRepository.findScheduleByOrder_OrderNumberAndTime(orderNumber, schedule) == null) {
                     throw new IllegalArgumentException("Provided schedule is invalid!");
                 }
+                List<LocalDateTime> schedules = new LinkedList<>();
+                schedules.add(schedule);
                 order.setOrderStatus(OrderStatus.RECEIVED);
                 scheduleRepository.deleteScheduleByOrder_OrderNumberAndTimeNotIn(orderNumber, schedules);
                 break;

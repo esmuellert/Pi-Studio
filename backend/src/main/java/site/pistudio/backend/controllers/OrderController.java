@@ -57,11 +57,15 @@ public class OrderController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public OrderClientBody setOrderStatus(@RequestHeader(name = "Authorization") String token,
-                                          @RequestBody Map<String, String> body,
+                                          @RequestBody(required = false) Map<String, String> body,
                                               @PathVariable(name = "id") Long id) {
         String openId = verifyTokenService.verifyToken(token);
         if (!openId.equals("admin")) {
             throw new InvalidTokenException();
+        }
+
+        if (body == null || body.isEmpty()) {
+            return orderService.setOrderStatus(null, id);
         }
         LocalDateTime schedule = LocalDateTime.parse(body.get("schedule"));
         return orderService.setOrderStatus(schedule, id);

@@ -74,13 +74,66 @@ export default function OrdersList(props) {
     setSchedule(schedules);
   };
 
-  const handleStatusChange = (event) => {
-    console.log(event.currentTarget);
+  const handleOtherStatus = (event) => {
+    let orderNumber = event.currentTarget.id;
+    axios
+      .patch(
+        `${url}/order/${orderNumber}`,
+        {},
+        { headers: { Authorization: localStorage.getItem("token") } }
+      )
+      .then((response) => {
+        let newRows = rows.map((x) => x);
+        newRows.forEach((element) => {
+          if (element.orderNumber === response.data.orderNumber) {
+            switch (element.orderStatus) {
+              case "RECEIVED":
+                element.orderStatus = "IMAGING";
+                break;
+              case "IMAGING":
+                element.orderStatus = "PROCESSING";
+                break;
+              case "PROCESSING":
+                element.orderStatus = "FINISHED";
+              default:
+                break;
+            }
+          }
+        });
+        setRows(newRows);
+      })
+      .catch((error) => {
+        alert("操作失败，请重试！");
+      });
   };
 
-  const handlePlacedOrder = (event) => {
-    
-  }
+  const handleStatusPlaced = (event) => {
+    let orderNumber = event.currentTarget.id;
+    axios
+      .patch(
+        `${url}/order/${orderNumber}`,
+        { schedule: schedule[orderNumber] },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((response) => {
+        let newRows = rows.map((x) => x);
+        newRows.forEach((element) => {
+          if (element.orderNumber === response.data.orderNumber) {
+            element.orderStatus = "RECEIVED";
+            element.schedule = [schedule[response.data.orderNumber]];
+          }
+        });
+        setRows(newRows);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("操作失败，请重试！");
+      });
+  };
 
   return (
     <React.Fragment>
@@ -159,25 +212,37 @@ export default function OrdersList(props) {
                   switch (row.orderStatus) {
                     case "PLACED":
                       return (
-                        <Button onClick={handleStatusChange} id={row.orderNumber}>
+                        <Button
+                          onClick={handleStatusPlaced}
+                          id={row.orderNumber}
+                        >
                           <PlayArrowIcon color="primary" />
                         </Button>
                       );
                     case "RECEIVED":
                       return (
-                        <Button onClick={handleStatusChange}>
+                        <Button
+                          onClick={handleOtherStatus}
+                          id={row.orderNumber}
+                        >
                           <PhotoCameraIcon color="primary" />
                         </Button>
                       );
                     case "IMAGING":
                       return (
-                        <Button onClick={handleStatusChange}>
+                        <Button
+                          onClick={handleOtherStatus}
+                          id={row.orderNumber}
+                        >
                           <ImageIcon color="primary" />
                         </Button>
                       );
                     case "PROCESSING":
                       return (
-                        <Button onClick={handleStatusChange}>
+                        <Button
+                          onClick={handleOtherStatus}
+                          id={row.orderNumber}
+                        >
                           <DoneIcon color="primary" />
                         </Button>
                       );
