@@ -20,7 +20,7 @@ import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import ImageIcon from "@material-ui/icons/Image";
 import PublishIcon from "@material-ui/icons/Publish";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-
+import S3 from "react-aws-s3";
 // Generate Order Data
 
 function preventDefault(event) {
@@ -95,6 +95,7 @@ export default function OrdersList(props) {
                 break;
               case "PROCESSING":
                 element.orderStatus = "FINISHED";
+                break;
               default:
                 break;
             }
@@ -133,6 +134,24 @@ export default function OrdersList(props) {
         console.log(error);
         alert("操作失败，请重试！");
       });
+  };
+
+  const handleUploadImage = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const image = event.target.files[0];
+      const config = {
+        bucketName: "pi-studio",
+        dirName: "image" /* optional */,
+        region: "ap-east-1",
+        accessKeyId: "AKIARGCHDWR4NJBRQHF5",
+        secretAccessKey: "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",
+      };
+      const reactS3Client = new S3(config);
+      reactS3Client
+        .uploadFile(image, "testfile.jpg")
+        .then((data) => console.log(data))
+        .catch((error) => console.error(error));
+    }
   };
 
   return (
@@ -251,8 +270,9 @@ export default function OrdersList(props) {
                   }
                 })()}{" "}
                 {row.orderStatus === "PROCESSING" ? (
-                  <Button>
-                    <PublishIcon color="primary" />
+                  <Button component="label">
+                    <input type="file" hidden onChange={handleUploadImage} />
+                    <PublishIcon color="primary"></PublishIcon>
                   </Button>
                 ) : null}
                 <Button onClick={props.onClickChatIcon} id={row.orderNumber}>

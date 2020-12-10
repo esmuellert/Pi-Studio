@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {  } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MessageList } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
@@ -76,9 +76,6 @@ const useStyles = makeStyles({
 
 export default function Chat(props) {
   const classes = useStyles();
-  const handleScroll = (event) => {
-    console.log(event.target.scrollTop);
-  };
 
   return (
     <div className={classes.container}>

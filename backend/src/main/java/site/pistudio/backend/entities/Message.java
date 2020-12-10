@@ -1,7 +1,6 @@
 package site.pistudio.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.aspectj.weaver.ast.Or;
 import site.pistudio.backend.utils.MessageSender;
 
 import javax.persistence.*;

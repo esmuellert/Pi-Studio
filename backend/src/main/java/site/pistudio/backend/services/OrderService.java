@@ -60,15 +60,20 @@ public class OrderService {
 
     public OrderClientBody getOrderByOrderNumber(long orderNumber, String openId) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
+        checkIfValidOrder(orderNumber, openId, order);
+        List<Schedule> schedules = scheduleRepository
+                .findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+        return OrderClientBody.OrderToClientBody(order, schedules);
+    }
+
+    static void checkIfValidOrder(long orderNumber, String openId, Order order) {
+
         if (order == null) {
             throw new NoSuchElementException("Order: " + orderNumber + " not found!");
         }
         if (!openId.equals(order.getOpenId()) && !openId.equals("admin")) {
             throw new InvalidTokenException(openId);
         }
-        List<Schedule> schedules = scheduleRepository
-                .findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
-        return OrderClientBody.OrderToClientBody(order, schedules);
     }
 
     public List<OrderClientBody> getOrdersByOpenId(String openId) {

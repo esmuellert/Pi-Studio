@@ -27,4 +27,9 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
+    @ExceptionHandler(value = UnsupportedOperationException.class) // all unsupported method, 403 code
+    protected ResponseEntity<String> hanldeUnsupportedMethod(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
 }
