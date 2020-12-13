@@ -46,7 +46,7 @@ const convertStatus = (status) => {
 
 const formatMessage = (rawMessage) => {
   let messages = [];
-  rawMessage.forEach(element => {
+  rawMessage.forEach((element) => {
     let message = {};
     if (element.messageSender === "USER") {
       message.position = "left";
@@ -58,6 +58,6 @@ const formatMessage = (rawMessage) => {
     message.date = new Date(element.time);
     messages.push(message);
   });
-  return messages
-}
+  return messages;
+};
 export { url, formatFullTime, convertStatus, formatMessage };

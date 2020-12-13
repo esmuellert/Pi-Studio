@@ -1,5 +1,6 @@
 package site.pistudio.backend.dao;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import site.pistudio.backend.entities.Image;
 

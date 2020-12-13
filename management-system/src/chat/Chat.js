@@ -1,4 +1,4 @@
-import React, {  } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MessageList } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";

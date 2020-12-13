@@ -8,6 +8,7 @@ import site.pistudio.backend.services.ImageService;
 import site.pistudio.backend.services.VerifyTokenService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("image")
@@ -35,8 +36,8 @@ public class ImageController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Image> getImages(@RequestHeader(name = "Authorization") String token,
-                                 @PathVariable(name = "id") long id) {
+    public List<UUID> getImages(@RequestHeader(name = "Authorization") String token,
+                                @PathVariable(name = "id") long id) {
         String openId = verifyTokenService.verifyToken(token);
         return imageService.getImagesByOrderNumber(id, openId);
     }
