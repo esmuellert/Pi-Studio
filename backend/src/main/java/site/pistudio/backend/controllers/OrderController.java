@@ -1,14 +1,12 @@
 package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.pistudio.backend.dto.OrderClientBody;
 import site.pistudio.backend.dto.OrderForm;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.OrderService;
 import site.pistudio.backend.services.VerifyTokenService;
-import site.pistudio.backend.utils.OrderStatus;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -53,12 +51,13 @@ public class OrderController {
         }
         return orderService.getOrdersByOpenId(openId);
     }
+
     @Transactional
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public OrderClientBody setOrderStatus(@RequestHeader(name = "Authorization") String token,
                                           @RequestBody(required = false) Map<String, String> body,
-                                              @PathVariable(name = "id") Long id) {
+                                          @PathVariable(name = "id") Long id) {
         String openId = verifyTokenService.verifyToken(token);
         if (!openId.equals("admin")) {
             throw new InvalidTokenException();

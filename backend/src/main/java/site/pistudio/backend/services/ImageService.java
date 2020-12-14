@@ -7,7 +7,10 @@ import site.pistudio.backend.entities.Image;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.utils.OrderStatus;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -37,13 +40,23 @@ public class ImageService {
         if (status.equals(OrderStatus.PROCESSING) || status.equals(OrderStatus.FINISHED)) {
             List<UUID> uuids = new LinkedList<>();
             List<Image> images = imageRepository.findImagesByOrderNumber(orderNumber);
-            for (Image image:images) {
+            for (Image image : images) {
                 uuids.add(image.getId());
             }
             return uuids;
         } else {
             throw new UnsupportedOperationException("Getting image is not allowed at this stage!");
         }
+    }
 
+    public long deleteImageById(UUID imageId) {
+        Image image = imageRepository.findImageById(imageId);
+
+        if (image == null) {
+            throw new NoSuchElementException("No image " + imageId.toString() + "!");
+        }
+        long orderNumber = image.getOrderNumber();
+        imageRepository.deleteImageById(imageId);
+        return orderNumber;
     }
 }

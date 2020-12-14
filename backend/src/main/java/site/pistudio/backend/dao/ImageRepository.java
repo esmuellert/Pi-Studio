@@ -9,4 +9,8 @@ import java.util.UUID;
 
 public interface ImageRepository extends CrudRepository<Image, UUID> {
     List<Image> findImagesByOrderNumber(long id);
+
+    void deleteImageById(UUID id);
+
+    Image findImageById(UUID id);
 }

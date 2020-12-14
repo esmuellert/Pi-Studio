@@ -7,6 +7,7 @@ import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.ImageService;
 import site.pistudio.backend.services.VerifyTokenService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,5 +41,17 @@ public class ImageController {
                                 @PathVariable(name = "id") long id) {
         String openId = verifyTokenService.verifyToken(token);
         return imageService.getImagesByOrderNumber(id, openId);
+    }
+
+    @Transactional
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public long deleteImage(@RequestHeader(name = "Authorization") String token,
+                              @PathVariable(name = "id") String imageId) {
+        String openId = verifyTokenService.verifyToken(token);
+        if (!openId.equals("admin")) {
+            throw new InvalidTokenException();
+        }
+        return imageService.deleteImageById(UUID.fromString(imageId));
     }
 }

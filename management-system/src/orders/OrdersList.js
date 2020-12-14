@@ -26,6 +26,7 @@ import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Images from "./Images";
+import AWS from "aws-sdk";
 // Generate Order Data
 
 function preventDefault(event) {
@@ -45,6 +46,20 @@ export default function OrdersList(props) {
   const [schedule, setSchedule] = useState({});
   const [opens, setOpens] = useState({});
   const [images, setImages] = useState({});
+  const [config, setConfig] = useState({
+    bucketName: process.env.REACT_APP_BUCKET_NAME,
+    dirName: process.env.REACT_APP_DIR_NAME,
+    region: process.env.REACT_APP_REGION,
+    accessKeyId: process.env.REACT_APP_ACCESS_ID,
+    secretAccessKey: process.env.REACT_APP_ACCESS_KEY,
+  });
+
+  AWS.config.update({
+    accessKeyId: process.env.REACT_APP_ACCESS_ID,
+    secretAccessKey: process.env.REACT_APP_ACCESS_KEY,
+    region: process.env.REACT_APP_REGION,
+  });
+
   useEffect(() => {
     let ignore = false;
     async function request() {
@@ -172,21 +187,15 @@ export default function OrdersList(props) {
           }
         )
         .then((response) => {
-          const config = {
-            bucketName: process.env.REACT_APP_BUCKET_NAME,
-            dirName: process.env.REACT_APP_DIR_NAME,
-            region: process.env.REACT_APP_REGION,
-            accessKeyId: process.env.REACT_APP_ACCESS_ID,
-            secretAccessKey: process.env.REACT_APP_ACCESS_KEY,
-          };
           const reactS3Client = new S3(config);
           reactS3Client.uploadFile(image, response.data.id).then((data) => {
+            console.log(image)
             console.log(data);
             let tempImages = Object.assign({}, images);
-            tempImages[orderNumber] = (images[orderNumber] || []).map((x) => x)
+            tempImages[orderNumber] = (images[orderNumber] || []).map((x) => x);
             tempImages[orderNumber].push(response.data.id);
-            setImages(tempImages)
-            console.log(tempImages)
+            setImages(tempImages);
+            console.log(tempImages);
           });
         })
         .catch((error) => {
@@ -206,7 +215,7 @@ export default function OrdersList(props) {
         })
         .then((response) => {
           let tempImages = Object.assign({}, images);
-          tempImages[orderNumber] = response.data
+          tempImages[orderNumber] = response.data;
           setImages(tempImages);
         })
         .catch((error) => console.error(error));
@@ -216,6 +225,34 @@ export default function OrdersList(props) {
     tempOpens[orderNumber] = !tempOpens[orderNumber];
     setOpens(tempOpens);
   };
+
+  const handleDeleteImage = (event) => {
+    const imageId = event.currentTarget.id;
+    let orderNumber = 0;
+    axios
+      .delete(`${process.env.REACT_APP_BACKEND_URL}/image/${imageId}`, {
+        headers: { Authorization: localStorage.getItem("token") },
+      })
+      .then((response) => {
+        orderNumber = response.data;
+        const s3 = new AWS.S3();
+        const params = {
+          Bucket: process.env.REACT_APP_BUCKET_NAME,
+          Key: process.env.REACT_APP_DIR_NAME + "/" + imageId + ".png",
+        };
+        s3.deleteObject(params, (error, data) => {
+          if (error) {
+            console.error(error);
+          } else {
+            let tempImages = Object.assign({}, images);
+            tempImages[orderNumber].splice(tempImages[orderNumber].indexOf(imageId), 1);
+            setImages(tempImages);
+          }
+        });
+      })
+      .catch((error) => console.error(error));
+  };
+
   return (
     <React.Fragment>
       <Title>Recent Orders</Title>
@@ -377,7 +414,10 @@ export default function OrdersList(props) {
                   >
                     <Collapse in={opens[row.orderNumber]}>
                       {images[row.orderNumber] ? (
-                        <Images images={images[row.orderNumber]} />
+                        <Images
+                          images={images[row.orderNumber]}
+                          onDeleteImage={handleDeleteImage}
+                        />
                       ) : null}
                     </Collapse>
                   </TableCell>
