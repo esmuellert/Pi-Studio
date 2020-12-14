@@ -8,7 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "../common/Title";
 import axios from "axios";
-import { url, formatFullTime, convertStatus } from "../common/utils";
+import { formatFullTime, convertStatus } from "../common/utils";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
@@ -21,7 +21,6 @@ import ImageIcon from "@material-ui/icons/Image";
 import PublishIcon from "@material-ui/icons/Publish";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import S3 from "react-aws-s3";
-import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -45,12 +44,12 @@ export default function OrdersList(props) {
   const [rows, setRows] = useState([]);
   const [schedule, setSchedule] = useState({});
   const [opens, setOpens] = useState({});
-
+  const [images, setImages] = useState({});
   useEffect(() => {
     let ignore = false;
     async function request() {
       await axios
-        .get(`${url}/order`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/order`, {
           headers: {
             Authorization: localStorage.getItem("token"),
           },
@@ -59,14 +58,23 @@ export default function OrdersList(props) {
           if (!ignore) {
             let schedules = {};
             let tempOpens = {};
+            let tempImages = {};
             response.data.forEach((element) => {
               schedules[element.orderNumber] = element.schedule[0];
               tempOpens[element.orderNumber] = false;
+              if (
+                element.orderStatus === "PROCESSING" ||
+                element.orderStatus === "FINISHED"
+              ) {
+                tempImages[element.orderNumber] = [];
+              }
             });
             setSchedule(schedules);
             setRows(response.data);
             setOpens(tempOpens);
+            setImages(tempImages);
             console.log(response.data);
+            console.log(tempImages);
           }
         })
         .catch((error) => {
@@ -90,7 +98,7 @@ export default function OrdersList(props) {
     let orderNumber = event.currentTarget.id;
     axios
       .patch(
-        `${url}/order/${orderNumber}`,
+        `${process.env.REACT_APP_BACKEND_URL}/order/${orderNumber}`,
         {},
         { headers: { Authorization: localStorage.getItem("token") } }
       )
@@ -104,6 +112,7 @@ export default function OrdersList(props) {
                 break;
               case "IMAGING":
                 element.orderStatus = "PROCESSING";
+                images[element.orderNumber] = [];
                 break;
               case "PROCESSING":
                 element.orderStatus = "FINISHED";
@@ -115,7 +124,7 @@ export default function OrdersList(props) {
         });
         setRows(newRows);
       })
-      .catch((error) => {
+      .catch(() => {
         alert("操作失败，请重试！");
       });
   };
@@ -124,7 +133,7 @@ export default function OrdersList(props) {
     let orderNumber = event.currentTarget.id;
     axios
       .patch(
-        `${url}/order/${orderNumber}`,
+        `${process.env.REACT_APP_BACKEND_URL}/order/${orderNumber}`,
         { schedule: schedule[orderNumber] },
         {
           headers: {
@@ -150,11 +159,12 @@ export default function OrdersList(props) {
 
   const handleUploadImage = (event) => {
     if (event.target.files && event.target.files[0]) {
+      const orderNumber = event.target.name;
       const image = event.target.files[0];
       axios
         .post(
-          `${url}/image`,
-          { orderNumber: event.target.name },
+          `${process.env.REACT_APP_BACKEND_URL}/image`,
+          { orderNumber: orderNumber },
           {
             headers: {
               Authorization: localStorage.getItem("token"),
@@ -170,9 +180,14 @@ export default function OrdersList(props) {
             secretAccessKey: process.env.REACT_APP_ACCESS_KEY,
           };
           const reactS3Client = new S3(config);
-          reactS3Client
-            .uploadFile(image, response.data.id)
-            .then((data) => console.log(data));
+          reactS3Client.uploadFile(image, response.data.id).then((data) => {
+            console.log(data);
+            let tempImages = Object.assign({}, images);
+            tempImages[orderNumber] = (images[orderNumber] || []).map((x) => x)
+            tempImages[orderNumber].push(response.data.id);
+            setImages(tempImages)
+            console.log(tempImages)
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -182,16 +197,25 @@ export default function OrdersList(props) {
   };
 
   const handleOpenCollapse = (event) => {
+    const orderNumber = event.currentTarget.id;
+
+    if (!opens[orderNumber] && images[orderNumber]) {
+      axios
+        .get(`${process.env.REACT_APP_BACKEND_URL}/image/${orderNumber}`, {
+          headers: { Authorization: localStorage.getItem("token") },
+        })
+        .then((response) => {
+          let tempImages = Object.assign({}, images);
+          tempImages[orderNumber] = response.data
+          setImages(tempImages);
+        })
+        .catch((error) => console.error(error));
+    }
+
     let tempOpens = Object.assign({}, opens);
-    tempOpens[event.currentTarget.id] = !tempOpens[event.currentTarget.id];
+    tempOpens[orderNumber] = !tempOpens[orderNumber];
     setOpens(tempOpens);
   };
-
-  const [images, setImages] = useState([
-    "https://image-yanuo.s3.ap-east-1.amazonaws.com/uPic/20-11-06+22.18.44.png",
-    "https://image-yanuo.s3.ap-east-1.amazonaws.com/uPic/three_way_handshake.png",
-  ]);
-
   return (
     <React.Fragment>
       <Title>Recent Orders</Title>
@@ -210,147 +234,157 @@ export default function OrdersList(props) {
           </TableRow>
         </TableHead>
 
-        {rows.length > 0?rows.map((row) => (
-          <TableBody>
-            <TableRow key={row.orderNumber}>
-              <TableCell>
-                <IconButton
-                  aria-label="expand row"
-                  size="small"
-                  id={row.orderNumber}
-                  onClick={handleOpenCollapse}
-                >
-                  {opens[row.orderNumber] ? (
-                    <KeyboardArrowUpIcon />
-                  ) : (
-                    <KeyboardArrowDownIcon />
-                  )}
-                </IconButton>
-              </TableCell>
-              <TableCell align="center">{row.orderNumber}</TableCell>
-              <TableCell align="center">
-                {formatFullTime(row.orderedTime)}
-              </TableCell>
-              <TableCell align="center">
-                {convertStatus(row.orderStatus)}
-              </TableCell>
-              <TableCell align="center">{row.wechatId}</TableCell>
-              <TableCell align="center">{row.phoneNumber}</TableCell>
-              <TableCell align="center">{row.type}</TableCell>
+        {rows.length > 0
+          ? rows.map((row) => (
+              <TableBody key={row.orderNumber}>
+                <TableRow>
+                  <TableCell>
+                    <IconButton
+                      aria-label="expand row"
+                      size="small"
+                      id={row.orderNumber}
+                      onClick={handleOpenCollapse}
+                    >
+                      {opens[row.orderNumber] ? (
+                        <KeyboardArrowUpIcon />
+                      ) : (
+                        <KeyboardArrowDownIcon />
+                      )}
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="center">{row.orderNumber}</TableCell>
+                  <TableCell align="center">
+                    {formatFullTime(row.orderedTime)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {convertStatus(row.orderStatus)}
+                  </TableCell>
+                  <TableCell align="center">{row.wechatId}</TableCell>
+                  <TableCell align="center">{row.phoneNumber}</TableCell>
+                  <TableCell align="center">{row.type}</TableCell>
 
-              {(() => {
-                if (row.schedule.length > 1 || row.orderStatus === "PLACED") {
-                  return (
-                    <TableCell align="center">
-                      <FormControl>
-                        <Select
-                          value={schedule[row.orderNumber]}
-                          onChange={handleScheduleChange}
-                        >
-                          {row.schedule.map((schedule) => (
-                            <MenuItem
-                              id={row.orderNumber}
-                              key={schedule}
-                              value={schedule}
+                  {(() => {
+                    if (
+                      row.schedule.length > 1 ||
+                      row.orderStatus === "PLACED"
+                    ) {
+                      return (
+                        <TableCell align="center">
+                          <FormControl>
+                            <Select
+                              value={schedule[row.orderNumber]}
+                              onChange={handleScheduleChange}
                             >
-                              {formatFullTime(schedule)}
+                              {row.schedule.map((schedule) => (
+                                <MenuItem
+                                  id={row.orderNumber}
+                                  key={schedule}
+                                  value={schedule}
+                                >
+                                  {formatFullTime(schedule)}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>{" "}
+                        </TableCell>
+                      );
+                    } else {
+                      return (
+                        <TableCell align="center">
+                          <Select
+                            input={<Input disableUnderline />}
+                            value={formatFullTime(row.schedule[0])}
+                            classes={{
+                              icon: classes.icon,
+                            }}
+                          >
+                            <MenuItem value={formatFullTime(row.schedule[0])}>
+                              {formatFullTime(row.schedule[0])}
                             </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>{" "}
-                    </TableCell>
-                  );
-                } else {
-                  return (
-                    <TableCell align="center">
-                      <Select
-                        input={<Input disableUnderline />}
-                        value={formatFullTime(row.schedule[0])}
-                        classes={{
-                          icon: classes.icon,
-                        }}
-                      >
-                        <MenuItem value={formatFullTime(row.schedule[0])}>
-                          {formatFullTime(row.schedule[0])}
-                        </MenuItem>
-                      </Select>
-                    </TableCell>
-                  );
-                }
-              })()}
+                          </Select>
+                        </TableCell>
+                      );
+                    }
+                  })()}
 
-              <TableCell align="center">
-                {" "}
-                {(() => {
-                  switch (row.orderStatus) {
-                    case "PLACED":
-                      return (
-                        <Button
-                          onClick={handleStatusPlaced}
-                          id={row.orderNumber}
-                        >
-                          <PlayArrowIcon color="primary" />
-                        </Button>
-                      );
-                    case "RECEIVED":
-                      return (
-                        <Button
-                          onClick={handleOtherStatus}
-                          id={row.orderNumber}
-                        >
-                          <PhotoCameraIcon color="primary" />
-                        </Button>
-                      );
-                    case "IMAGING":
-                      return (
-                        <Button
-                          onClick={handleOtherStatus}
-                          id={row.orderNumber}
-                        >
-                          <ImageIcon color="primary" />
-                        </Button>
-                      );
-                    case "PROCESSING":
-                      return (
-                        <Button
-                          onClick={handleOtherStatus}
-                          id={row.orderNumber}
-                        >
-                          <DoneIcon color="primary" />
-                        </Button>
-                      );
-                    default:
-                      return null;
-                  }
-                })()}{" "}
-                {row.orderStatus === "PROCESSING" ? (
-                  <Button component="label">
-                    <input
-                      name={row.orderNumber}
-                      type="file"
-                      hidden
-                      onChange={handleUploadImage}
-                    />
-                    <PublishIcon color="primary"></PublishIcon>
-                  </Button>
-                ) : null}
-                <Button onClick={props.onClickChatIcon} id={row.orderNumber}>
-                  <ChatIcon color="primary" />
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell
-                style={{ paddingBottom: 0, paddingTop: 0, borderBottom: 0 }}
-                colSpan={9}
-              >
-                <Collapse in={opens[row.orderNumber]}>
-                  <Images images={images}/>
-                </Collapse>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        )) : null}
+                  <TableCell align="center">
+                    {" "}
+                    {(() => {
+                      switch (row.orderStatus) {
+                        case "PLACED":
+                          return (
+                            <Button
+                              onClick={handleStatusPlaced}
+                              id={row.orderNumber}
+                            >
+                              <PlayArrowIcon color="primary" />
+                            </Button>
+                          );
+                        case "RECEIVED":
+                          return (
+                            <Button
+                              onClick={handleOtherStatus}
+                              id={row.orderNumber}
+                            >
+                              <PhotoCameraIcon color="primary" />
+                            </Button>
+                          );
+                        case "IMAGING":
+                          return (
+                            <Button
+                              onClick={handleOtherStatus}
+                              id={row.orderNumber}
+                            >
+                              <ImageIcon color="primary" />
+                            </Button>
+                          );
+                        case "PROCESSING":
+                          return (
+                            <Button
+                              onClick={handleOtherStatus}
+                              id={row.orderNumber}
+                            >
+                              <DoneIcon color="primary" />
+                            </Button>
+                          );
+                        default:
+                          return null;
+                      }
+                    })()}{" "}
+                    {row.orderStatus === "PROCESSING" ? (
+                      <Button component="label">
+                        <input
+                          name={row.orderNumber}
+                          type="file"
+                          hidden
+                          onChange={handleUploadImage}
+                        />
+                        <PublishIcon color="primary"></PublishIcon>
+                      </Button>
+                    ) : null}
+                    <Button
+                      onClick={props.onClickChatIcon}
+                      id={row.orderNumber}
+                    >
+                      <ChatIcon color="primary" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell
+                    style={{ paddingBottom: 0, paddingTop: 0, borderBottom: 0 }}
+                    colSpan={9}
+                  >
+                    <Collapse in={opens[row.orderNumber]}>
+                      {images[row.orderNumber] ? (
+                        <Images images={images[row.orderNumber]} />
+                      ) : null}
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ))
+          : null}
       </Table>
       <div className={classes.seeMore}>
         <Link color="primary" href="#" onClick={preventDefault}>

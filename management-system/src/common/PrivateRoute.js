@@ -6,7 +6,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
-import { url } from "./utils";
 const PrivateRoute = ({ component: Component, ...rest }) => {
   // Add your own authentication on the below line.
   const [isAuthencated, setIsAuthencated] = useState(false);
@@ -15,7 +14,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     let ignore = false;
     async function request() {
       await axios
-        .post(`${url}/login`, {
+        .post(`${process.env.REACT_APP_BACKEND_URL}/login`, {
           token: localStorage.getItem("token"),
         })
         .then(() => {

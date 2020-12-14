@@ -22,7 +22,7 @@ import OrdersList from "./OrdersList";
 import Copyright from "../common/Copyright";
 import Chat from "../chat/Chat";
 import axios from "axios";
-import { url, formatMessage } from "../common/utils";
+import { formatMessage } from "../common/utils";
 
 const drawerWidth = 240;
 
@@ -118,7 +118,7 @@ export default function Orders() {
   const [chatOrderNumber, setChatOrderNumber] = useState();
   const handleOpenChat = (event) => {
     axios
-      .get(`${url}/message/${event.currentTarget.id}`, {
+      .get(`${process.env.REACT_APP_BACKEND_URL}/message/${event.currentTarget.id}`, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
@@ -134,7 +134,7 @@ export default function Orders() {
     console.log(event.currentTarget);
   };
 
-  const handleCloseChat = (event) => {
+  const handleCloseChat = () => {
     setMessages([]);
     setDisplayChatWidget(false);
   };
@@ -142,7 +142,7 @@ export default function Orders() {
   const handleSendMessage = () => {
     axios
       .post(
-        `${url}/message`,
+        `${process.env.REACT_APP_BACKEND_URL}/message`,
         {
           orderNumber: chatOrderNumber,
           message: messageText,

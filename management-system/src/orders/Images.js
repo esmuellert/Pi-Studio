@@ -19,7 +19,7 @@ export default function Images(props) {
         <Grid item sm={6} xs={12} container key={image}>
           <Grid item xs={12} className={classes.box}>
             {" "}
-            <img className={classes.img} src={image} alt={image}/>
+            <img className={classes.img} src={process.env.REACT_APP_S3_URL + image + ".png"} alt={image}/>
           </Grid>
           <Grid item container xs={6} justify="center" alignItems="center">
             <Button variant="contained" color="primary">

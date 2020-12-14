@@ -13,7 +13,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import { url } from "./utils";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -58,10 +57,10 @@ export default function SignIn() {
     let ignore = false;
     async function request() {
       await axios
-        .post(`${url}/login`, {
+        .post(`${process.env.REACT_APP_BACKEND_URL}/login`, {
           token: localStorage.getItem("token"),
         })
-        .then((response) => {
+        .then(() => {
           if (!ignore) {
             history.push("/dashboard");
           }
@@ -82,7 +81,7 @@ export default function SignIn() {
     const password = event.target.password.value;
 
     axios
-      .post(`${url}/login`, {
+      .post(`${process.env.REACT_APP_BACKEND_URL}/login`, {
         username: username,
         password: password,
       })
