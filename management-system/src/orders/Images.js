@@ -21,22 +21,23 @@ export default function Images(props) {
             {" "}
             <img
               className={classes.img}
-              src={process.env.REACT_APP_S3_URL + image + ".png"}
+              src={process.env.REACT_APP_S3_URL + image}
               alt={image}
             />
           </Grid>
           <Grid item container xs={6} justify="center" alignItems="center">
             <Button variant="contained" color="primary" component="label">
-              <input
-                name={image}
-                type="file"
-                hidden
-              />
+              <input name={image} type="file" hidden />
               替换
             </Button>
           </Grid>
           <Grid item container xs={6} justify="center" alignItems="center">
-            <Button variant="contained" color="secondary" id={image} onClick={props.onDeleteImage}>
+            <Button
+              variant="contained"
+              color="secondary"
+              id={image}
+              onClick={props.onDeleteImage}
+            >
               删除
             </Button>
           </Grid>

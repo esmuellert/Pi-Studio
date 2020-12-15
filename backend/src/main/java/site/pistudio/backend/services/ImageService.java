@@ -7,10 +7,7 @@ import site.pistudio.backend.entities.Image;
 import site.pistudio.backend.entities.Order;
 import site.pistudio.backend.utils.OrderStatus;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImageService {
@@ -33,30 +30,29 @@ public class ImageService {
         return imageRepository.save(image);
     }
 
-    public List<UUID> getImagesByOrderNumber(long orderNumber, String openId) {
+    public List<String> getImagesByOrderNumber(long orderNumber, String openId) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         OrderService.checkIfValidOrder(orderNumber, openId, order);
         OrderStatus status = order.getOrderStatus();
         if (status.equals(OrderStatus.PROCESSING) || status.equals(OrderStatus.FINISHED)) {
-            List<UUID> uuids = new LinkedList<>();
+            List<String> list = new LinkedList<>();
             List<Image> images = imageRepository.findImagesByOrderNumber(orderNumber);
             for (Image image : images) {
-                uuids.add(image.getId());
+                list.add(image.getId().toString() + image.getType());
             }
-            return uuids;
+            return list;
         } else {
             throw new UnsupportedOperationException("Getting image is not allowed at this stage!");
         }
     }
 
-    public long deleteImageById(UUID imageId) {
+    public Image deleteImageById(UUID imageId) {
         Image image = imageRepository.findImageById(imageId);
 
         if (image == null) {
             throw new NoSuchElementException("No image " + imageId.toString() + "!");
         }
-        long orderNumber = image.getOrderNumber();
         imageRepository.deleteImageById(imageId);
-        return orderNumber;
+        return image;
     }
 }

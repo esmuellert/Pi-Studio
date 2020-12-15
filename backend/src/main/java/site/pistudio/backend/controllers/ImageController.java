@@ -4,11 +4,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import site.pistudio.backend.entities.Image;
 import site.pistudio.backend.exceptions.InvalidTokenException;
+import site.pistudio.backend.services.AWSS3Service;
 import site.pistudio.backend.services.ImageService;
 import site.pistudio.backend.services.VerifyTokenService;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -16,12 +18,13 @@ import java.util.UUID;
 public class ImageController {
     private final ImageService imageService;
     private final VerifyTokenService verifyTokenService;
-
+    private final AWSS3Service s3Service;
     public ImageController(ImageService imageService,
-                           VerifyTokenService verifyTokenService) {
+                           VerifyTokenService verifyTokenService, AWSS3Service s3Service) {
         this.imageService = imageService;
         this.verifyTokenService = verifyTokenService;
 
+        this.s3Service = s3Service;
     }
 
     @PostMapping
@@ -37,8 +40,8 @@ public class ImageController {
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<UUID> getImages(@RequestHeader(name = "Authorization") String token,
-                                @PathVariable(name = "id") long id) {
+    public List<String> getImages(@RequestHeader(name = "Authorization") String token,
+                                               @PathVariable(name = "id") long id) {
         String openId = verifyTokenService.verifyToken(token);
         return imageService.getImagesByOrderNumber(id, openId);
     }
@@ -52,6 +55,8 @@ public class ImageController {
         if (!openId.equals("admin")) {
             throw new InvalidTokenException();
         }
-        return imageService.deleteImageById(UUID.fromString(imageId));
+        Image image = imageService.deleteImageById(UUID.fromString(imageId));
+        s3Service.deleteImage(imageId + image.getType());
+        return image.getOrderNumber();
     }
 }

@@ -20,7 +20,6 @@ import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import ImageIcon from "@material-ui/icons/Image";
 import PublishIcon from "@material-ui/icons/Publish";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import S3 from "react-aws-s3";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -46,13 +45,6 @@ export default function OrdersList(props) {
   const [schedule, setSchedule] = useState({});
   const [opens, setOpens] = useState({});
   const [images, setImages] = useState({});
-  const [config, setConfig] = useState({
-    bucketName: process.env.REACT_APP_BUCKET_NAME,
-    dirName: process.env.REACT_APP_DIR_NAME,
-    region: process.env.REACT_APP_REGION,
-    accessKeyId: process.env.REACT_APP_ACCESS_ID,
-    secretAccessKey: process.env.REACT_APP_ACCESS_KEY,
-  });
 
   AWS.config.update({
     accessKeyId: process.env.REACT_APP_ACCESS_ID,
@@ -176,10 +168,17 @@ export default function OrdersList(props) {
     if (event.target.files && event.target.files[0]) {
       const orderNumber = event.target.name;
       const image = event.target.files[0];
+      const type =
+        "." +
+        image.type.substring(
+          image.type.lastIndexOf("/") + 1,
+          image.type.length
+        );
+      console.log(type);
       axios
         .post(
           `${process.env.REACT_APP_BACKEND_URL}/image`,
-          { orderNumber: orderNumber },
+          { orderNumber: orderNumber, type: type },
           {
             headers: {
               Authorization: localStorage.getItem("token"),
@@ -187,13 +186,21 @@ export default function OrdersList(props) {
           }
         )
         .then((response) => {
-          const reactS3Client = new S3(config);
-          reactS3Client.uploadFile(image, response.data.id).then((data) => {
-            console.log(image)
+          const upload = new AWS.S3.ManagedUpload({
+            params: {
+              Bucket: process.env.REACT_APP_BUCKET_NAME,
+              Key:
+                process.env.REACT_APP_DIR_NAME + "/" + response.data.id + type,
+              Body: image,
+              ACL: "public-read",
+            },
+          });
+
+          upload.promise().then((data) => {
             console.log(data);
             let tempImages = Object.assign({}, images);
             tempImages[orderNumber] = (images[orderNumber] || []).map((x) => x);
-            tempImages[orderNumber].push(response.data.id);
+            tempImages[orderNumber].push(response.data.id + response.data.type);
             setImages(tempImages);
             console.log(tempImages);
           });
@@ -227,7 +234,11 @@ export default function OrdersList(props) {
   };
 
   const handleDeleteImage = (event) => {
-    const imageId = event.currentTarget.id;
+    const imageId = event.currentTarget.id.substring(
+      0,
+      event.currentTarget.id.indexOf(".")
+    );
+    const fileName = event.currentTarget.id;
     let orderNumber = 0;
     axios
       .delete(`${process.env.REACT_APP_BACKEND_URL}/image/${imageId}`, {
@@ -235,20 +246,12 @@ export default function OrdersList(props) {
       })
       .then((response) => {
         orderNumber = response.data;
-        const s3 = new AWS.S3();
-        const params = {
-          Bucket: process.env.REACT_APP_BUCKET_NAME,
-          Key: process.env.REACT_APP_DIR_NAME + "/" + imageId + ".png",
-        };
-        s3.deleteObject(params, (error, data) => {
-          if (error) {
-            console.error(error);
-          } else {
-            let tempImages = Object.assign({}, images);
-            tempImages[orderNumber].splice(tempImages[orderNumber].indexOf(imageId), 1);
-            setImages(tempImages);
-          }
-        });
+        let tempImages = Object.assign({}, images);
+        tempImages[orderNumber].splice(
+          tempImages[orderNumber].indexOf(fileName),
+          1
+        );
+        setImages(tempImages);
       })
       .catch((error) => console.error(error));
   };
@@ -395,6 +398,7 @@ export default function OrdersList(props) {
                           type="file"
                           hidden
                           onChange={handleUploadImage}
+                          accept="image/*"
                         />
                         <PublishIcon color="primary"></PublishIcon>
                       </Button>

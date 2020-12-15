@@ -118,11 +118,14 @@ export default function Orders() {
   const [chatOrderNumber, setChatOrderNumber] = useState();
   const handleOpenChat = (event) => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/message/${event.currentTarget.id}`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      })
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/message/${event.currentTarget.id}`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      )
       .then((response) => {
         setMessages(formatMessage(response.data));
       })

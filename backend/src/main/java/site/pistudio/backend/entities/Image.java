@@ -12,6 +12,8 @@ public class Image {
 
     private long orderNumber;
 
+    private String type;
+
     public UUID getId() {
         return id;
     }
@@ -26,5 +28,13 @@ public class Image {
 
     public void setOrderNumber(long orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
