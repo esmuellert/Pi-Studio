@@ -59,4 +59,15 @@ public class ImageController {
         s3Service.deleteImage(imageId + image.getType());
         return image.getOrderNumber();
     }
+
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Image updateImage(@RequestHeader(name = "Authorization") String token,
+                             @RequestBody Image image) {
+        String openId = verifyTokenService.verifyToken(token);
+        if (!openId.equals("admin")) {
+            throw new InvalidTokenException();
+        }
+        return imageService.updateImage(image);
+    }
 }

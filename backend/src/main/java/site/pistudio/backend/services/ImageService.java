@@ -55,4 +55,13 @@ public class ImageService {
         imageRepository.deleteImageById(imageId);
         return image;
     }
+
+    public Image updateImage(Image image) {
+        long orderNumber = imageRepository.findImageById(image.getId()).getOrderNumber();
+        if (orderNumber == image.getOrderNumber()) {
+            return image;
+        }
+        image.setOrderNumber(orderNumber);
+        return imageRepository.save(image);
+    }
 }

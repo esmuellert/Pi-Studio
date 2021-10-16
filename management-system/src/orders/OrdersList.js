@@ -15,7 +15,7 @@ import Select from "@material-ui/core/Select";
 import Input from "@material-ui/core/Input";
 import ChatIcon from "@material-ui/icons/Chat";
 import DoneIcon from "@material-ui/icons/Done";
-import { Button } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import ImageIcon from "@material-ui/icons/Image";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -26,6 +26,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Images from "./Images";
 import AWS from "aws-sdk";
+
 // Generate Order Data
 
 function preventDefault(event) {
@@ -256,9 +257,84 @@ export default function OrdersList(props) {
       .catch((error) => console.error(error));
   };
 
+  const handleReplaceImage = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const fileName = event.target.name;
+      const id = fileName.substring(0, fileName.indexOf("."));
+      const image = event.target.files[0];
+      const imageType =
+        "." +
+        image.type.substring(
+          image.type.lastIndexOf("/") + 1,
+          image.type.length
+        );
+      let fail = false;
+      let orderNumber = 0;
+      axios
+        .patch(
+          `${process.env.REACT_APP_BACKEND_URL}/image`,
+          {
+            id: id,
+            type: imageType,
+          },
+          {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          }
+        )
+        .then((response) => {
+          orderNumber = response.data.orderNumber;
+        })
+        .catch((error) => {
+          console.error(error);
+          fail = true;
+          alert("替换失败，请重试！");
+        });
+      if (!fail) {
+        const upload = new AWS.S3.ManagedUpload({
+          params: {
+            Bucket: process.env.REACT_APP_BUCKET_NAME,
+            Key: process.env.REACT_APP_DIR_NAME + "/" + id + imageType,
+            Body: image,
+            ACL: "public-read",
+          },
+        });
+
+        upload
+          .promise()
+          .then((data) => {
+            let tempImages = Object.assign({}, images);
+            tempImages[orderNumber][tempImages[orderNumber].indexOf(fileName)] =
+              id + imageType + "?" + Math.random();
+            setImages(tempImages);
+            console.log(data);
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("替换失败，请重试！");
+          });
+      }
+    }
+  };
+
   return (
     <React.Fragment>
       <Title>Recent Orders</Title>
+      <Grid container spacing={2}>
+        <Grid item xs={1}>
+          <Link href="#" color='primary'>本周</Link>
+        </Grid>
+        <Grid item xs={1}>
+          <Link href="#" color='primary'>上周</Link>
+        </Grid>
+        <Grid item xs={1}>
+          <Link href="#" color='primary'>本月</Link>
+        </Grid>
+        <Grid item xs={1}>
+          <Link href="#" color='primary'>更早</Link>
+        </Grid>
+      </Grid>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -421,6 +497,7 @@ export default function OrdersList(props) {
                         <Images
                           images={images[row.orderNumber]}
                           onDeleteImage={handleDeleteImage}
+                          onReplaceImage={handleReplaceImage}
                         />
                       ) : null}
                     </Collapse>

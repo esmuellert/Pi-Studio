@@ -27,7 +27,13 @@ export default function Images(props) {
           </Grid>
           <Grid item container xs={6} justify="center" alignItems="center">
             <Button variant="contained" color="primary" component="label">
-              <input name={image} type="file" hidden />
+              <input
+                name={image}
+                type="file"
+                hidden
+                onChange={props.onReplaceImage}
+                accept="image/*"
+              />
               替换
             </Button>
           </Grid>
