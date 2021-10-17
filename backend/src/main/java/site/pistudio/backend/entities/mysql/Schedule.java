@@ -1,7 +1,6 @@
-package site.pistudio.backend.entities;
+package site.pistudio.backend.entities.mysql;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

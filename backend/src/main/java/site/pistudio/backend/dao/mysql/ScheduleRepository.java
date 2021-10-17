@@ -1,8 +1,8 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.dao.mysql;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import site.pistudio.backend.entities.Schedule;
+import site.pistudio.backend.entities.mysql.Schedule;
 
 import java.time.LocalDateTime;
 import java.util.List;

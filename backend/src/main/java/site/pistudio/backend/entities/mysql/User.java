@@ -1,4 +1,4 @@
-package site.pistudio.backend.entities;
+package site.pistudio.backend.entities.mysql;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package site.pistudio.backend.entities;
+package site.pistudio.backend.entities.mysql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import site.pistudio.backend.utils.MessageSender;

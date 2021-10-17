@@ -5,7 +5,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import site.pistudio.backend.entities.Schedule;
+import site.pistudio.backend.dao.mysql.OrderRepository;
+import site.pistudio.backend.dao.mysql.ScheduleRepository;
+import site.pistudio.backend.entities.mysql.Schedule;
 import site.pistudio.backend.services.OrderService;
 
 import java.util.List;

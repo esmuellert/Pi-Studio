@@ -1,9 +1,8 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.dao.mysql;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import site.pistudio.backend.entities.Order;
+import site.pistudio.backend.entities.mysql.Order;
 
 import java.util.List;
 

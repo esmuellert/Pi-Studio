@@ -2,7 +2,7 @@ package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.entities.Image;
+import site.pistudio.backend.entities.mysql.Image;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.AWSS3Service;
 import site.pistudio.backend.services.ImageService;
@@ -10,7 +10,6 @@ import site.pistudio.backend.services.VerifyTokenService;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController

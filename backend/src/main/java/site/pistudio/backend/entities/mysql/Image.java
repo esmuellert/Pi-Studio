@@ -1,4 +1,4 @@
-package site.pistudio.backend.entities;
+package site.pistudio.backend.entities.mysql;
 
 import javax.persistence.*;
 import java.util.UUID;

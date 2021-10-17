@@ -1,12 +1,12 @@
 package site.pistudio.backend.services;
 
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.OrderRepository;
-import site.pistudio.backend.dao.ScheduleRepository;
-import site.pistudio.backend.dto.OrderClientBody;
-import site.pistudio.backend.dto.OrderForm;
-import site.pistudio.backend.entities.Order;
-import site.pistudio.backend.entities.Schedule;
+import site.pistudio.backend.dao.mysql.OrderRepository;
+import site.pistudio.backend.dao.mysql.ScheduleRepository;
+import site.pistudio.backend.dto.mysql.OrderClientBody;
+import site.pistudio.backend.dto.mysql.OrderForm;
+import site.pistudio.backend.entities.mysql.Order;
+import site.pistudio.backend.entities.mysql.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.OrderStatus;
 

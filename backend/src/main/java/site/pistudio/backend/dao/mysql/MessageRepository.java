@@ -1,9 +1,9 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.dao.mysql;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import site.pistudio.backend.entities.Message;
+import site.pistudio.backend.entities.mysql.Message;
 
 import java.util.List;
 

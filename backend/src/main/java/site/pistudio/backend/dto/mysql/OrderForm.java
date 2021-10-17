@@ -1,4 +1,4 @@
-package site.pistudio.backend.dto;
+package site.pistudio.backend.dto.mysql;
 
 import java.time.LocalDateTime;
 import java.util.List;

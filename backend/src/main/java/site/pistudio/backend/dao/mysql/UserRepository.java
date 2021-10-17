@@ -1,8 +1,8 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.dao.mysql;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import site.pistudio.backend.entities.User;
+import site.pistudio.backend.entities.mysql.User;
 
 import java.util.UUID;
 

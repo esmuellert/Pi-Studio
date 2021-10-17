@@ -4,10 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.MessageRepository;
-import site.pistudio.backend.dao.OrderRepository;
-import site.pistudio.backend.entities.Message;
-import site.pistudio.backend.entities.Order;
+import site.pistudio.backend.dao.mysql.MessageRepository;
+import site.pistudio.backend.dao.mysql.OrderRepository;
+import site.pistudio.backend.entities.mysql.Message;
+import site.pistudio.backend.entities.mysql.Order;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.MessageSender;
 

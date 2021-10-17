@@ -1,8 +1,7 @@
-package site.pistudio.backend.dao;
+package site.pistudio.backend.dao.mysql;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import site.pistudio.backend.entities.Image;
+import site.pistudio.backend.entities.mysql.Image;
 
 import java.util.List;
 import java.util.UUID;

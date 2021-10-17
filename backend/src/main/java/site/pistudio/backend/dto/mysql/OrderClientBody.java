@@ -1,7 +1,7 @@
-package site.pistudio.backend.dto;
+package site.pistudio.backend.dto.mysql;
 
-import site.pistudio.backend.entities.Order;
-import site.pistudio.backend.entities.Schedule;
+import site.pistudio.backend.entities.mysql.Order;
+import site.pistudio.backend.entities.mysql.Schedule;
 import site.pistudio.backend.utils.OrderStatus;
 
 import java.time.LocalDateTime;

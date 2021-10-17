@@ -3,8 +3,8 @@ package site.pistudio.backend;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import site.pistudio.backend.dao.AdminRepository;
-import site.pistudio.backend.entities.Admin;
+import site.pistudio.backend.dao.mysql.AdminRepository;
+import site.pistudio.backend.entities.mysql.Admin;
 import site.pistudio.backend.services.LoginService;
 import site.pistudio.backend.utils.TokenStatus;
 

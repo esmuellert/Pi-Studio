@@ -1,4 +1,4 @@
-package site.pistudio.backend.entities;
+package site.pistudio.backend.entities.mysql;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
