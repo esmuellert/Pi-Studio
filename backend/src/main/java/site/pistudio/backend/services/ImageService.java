@@ -1,10 +1,10 @@
 package site.pistudio.backend.services;
 
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.mysql.ImageRepository;
-import site.pistudio.backend.dao.mysql.OrderRepository;
-import site.pistudio.backend.entities.mysql.Image;
-import site.pistudio.backend.entities.mysql.Order;
+import site.pistudio.backend.dao.firestore.ImageRepository;
+import site.pistudio.backend.dao.firestore.OrderRepository;
+import site.pistudio.backend.entities.firestore.Image;
+import site.pistudio.backend.entities.firestore.Order;
 import site.pistudio.backend.utils.OrderStatus;
 
 import java.util.*;

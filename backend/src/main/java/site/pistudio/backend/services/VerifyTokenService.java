@@ -5,11 +5,11 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.mysql.AdminRepository;
-import site.pistudio.backend.dao.mysql.UserRepository;
-import site.pistudio.backend.entities.mysql.Admin;
-import site.pistudio.backend.entities.mysql.Role;
-import site.pistudio.backend.entities.mysql.User;
+import site.pistudio.backend.dao.firestore.AdminRepository;
+import site.pistudio.backend.dao.firestore.UserRepository;
+import site.pistudio.backend.entities.firestore.Admin;
+import site.pistudio.backend.entities.firestore.Role;
+import site.pistudio.backend.entities.firestore.User;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 
 import java.util.List;

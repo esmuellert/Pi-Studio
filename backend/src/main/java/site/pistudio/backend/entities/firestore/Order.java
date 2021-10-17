@@ -1,5 +1,7 @@
 package site.pistudio.backend.entities.firestore;
 
+import com.google.cloud.datastore.Key;
+import org.springframework.cloud.gcp.data.datastore.core.mapping.Descendants;
 import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
 import org.springframework.data.annotation.Id;
 import site.pistudio.backend.utils.OrderStatus;
@@ -10,6 +12,8 @@ import java.util.List;
 @Entity
 public class Order {
     @Id
+    Key key;
+
     private long orderNumber;
 
     private OrderStatus orderStatus;
@@ -26,11 +30,13 @@ public class Order {
 
     private LocalDateTime orderedTime;
 
-
+    @Descendants
     private List<Schedule> schedules;
 
+    @Descendants
     private List<Message> messages;
 
+    @Descendants
     private List<Image> images;
 
     public long getOrderNumber() {

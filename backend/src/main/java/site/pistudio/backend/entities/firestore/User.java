@@ -1,5 +1,6 @@
 package site.pistudio.backend.entities.firestore;
 
+import com.google.cloud.datastore.Key;
 import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
 import org.springframework.data.annotation.Id;
 
@@ -9,6 +10,8 @@ import java.util.UUID;
 @Entity
 public class User implements Role {
     @Id
+    Key key;
+
     private UUID id;
 
     private String openId;

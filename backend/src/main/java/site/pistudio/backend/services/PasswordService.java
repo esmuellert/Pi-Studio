@@ -2,8 +2,8 @@ package site.pistudio.backend.services;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.mysql.AdminRepository;
-import site.pistudio.backend.entities.mysql.Admin;
+import site.pistudio.backend.dao.firestore.AdminRepository;
+import site.pistudio.backend.entities.firestore.Admin;
 import site.pistudio.backend.exceptions.IllegalAdminException;
 import site.pistudio.backend.utils.TokenStatus;
 

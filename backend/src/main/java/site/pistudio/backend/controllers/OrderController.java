@@ -2,8 +2,8 @@ package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.dto.mysql.OrderResponse;
-import site.pistudio.backend.dto.mysql.OrderRequest;
+import site.pistudio.backend.dto.firestore.OrderResponse;
+import site.pistudio.backend.dto.firestore.OrderRequest;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.OrderService;
 import site.pistudio.backend.services.VerifyTokenService;

@@ -1,5 +1,6 @@
 package site.pistudio.backend.entities.firestore;
 
+import com.google.cloud.datastore.Key;
 import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
 import org.springframework.data.annotation.Id;
 
@@ -9,8 +10,9 @@ import java.util.UUID;
 @Entity
 public class Admin implements Role {
     @Id
-    private UUID id;
+    Key key;
 
+    private UUID id;
     private String username;
     private String password;
     private LocalDateTime tokenExpired;

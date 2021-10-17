@@ -4,10 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.mysql.MessageRepository;
-import site.pistudio.backend.dao.mysql.OrderRepository;
-import site.pistudio.backend.entities.mysql.Message;
-import site.pistudio.backend.entities.mysql.Order;
+import site.pistudio.backend.dao.firestore.MessageRepository;
+import site.pistudio.backend.dao.firestore.OrderRepository;
+import site.pistudio.backend.entities.firestore.Message;
+import site.pistudio.backend.entities.firestore.Order;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.MessageSender;
 
@@ -38,7 +38,7 @@ public class MessageService {
             message.setMessageSender(MessageSender.USER);
         }
         message.setMessage(messageText);
-        message.setOrder(order);
+        message.setOrderNumber(order.getOrderNumber());
         message.setTime(LocalDateTime.now());
         return messageRepository.save(message);
 
@@ -50,7 +50,7 @@ public class MessageService {
             throw new InvalidTokenException();
         }
         Pageable pageable = PageRequest.of(page, 5);
-        return messageRepository.findByOrder_OrderNumberOrderByTimeAsc(orderNumber, pageable);
+        return messageRepository.findByOrderNumberOrderByTimeAsc(orderNumber, pageable);
     }
 
     public List<Message> getMessages(long orderNumber, String openId) {
@@ -58,6 +58,6 @@ public class MessageService {
         if (!openId.equals("admin") && !openId.equals(order.getOpenId())) {
             throw new InvalidTokenException();
         }
-        return messageRepository.findByOrder_OrderNumberOrderByTimeAsc(orderNumber);
+        return messageRepository.findByOrderNumberOrderByTimeAsc(orderNumber);
     }
 }

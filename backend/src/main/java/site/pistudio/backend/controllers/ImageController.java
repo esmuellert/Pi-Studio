@@ -2,7 +2,7 @@ package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.entities.mysql.Image;
+import site.pistudio.backend.entities.firestore.Image;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.AWSS3Service;
 import site.pistudio.backend.services.ImageService;

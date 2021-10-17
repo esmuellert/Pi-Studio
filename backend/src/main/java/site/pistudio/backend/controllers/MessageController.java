@@ -2,7 +2,7 @@ package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.entities.mysql.Message;
+import site.pistudio.backend.entities.firestore.Message;
 import site.pistudio.backend.services.MessageService;
 import site.pistudio.backend.services.VerifyTokenService;
 

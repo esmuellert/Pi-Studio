@@ -6,14 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
-import site.pistudio.backend.dao.mysql.AdminRepository;
-import site.pistudio.backend.dao.mysql.UserRepository;
-import site.pistudio.backend.entities.mysql.Admin;
+import site.pistudio.backend.dao.firestore.AdminRepository;
+import site.pistudio.backend.dao.firestore.UserRepository;
+import site.pistudio.backend.entities.firestore.Admin;
+import site.pistudio.backend.entities.firestore.User;
 import site.pistudio.backend.services.LoginService;
 import site.pistudio.backend.services.VerifyTokenService;
 import site.pistudio.backend.utils.TokenStatus;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @SpringBootTest
@@ -50,10 +52,18 @@ public class LoginServiceIntegrationTest {
     @Test
     public void addAdmin() {
         Admin yanuo = new Admin();
-        yanuo.setId(UUID.randomUUID());
         yanuo.setUsername("yanuo");
         yanuo.setPassword(bCryptPasswordEncoder.encode("980508"));
         loginService.generateToken(yanuo, TokenStatus.RENEW);
         adminRepository.save(yanuo);
+    }
+
+    @Test
+    public void addUser() {
+        User user = new User();
+        user.setRegisterDate(LocalDateTime.now());
+        user.setOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
+        loginService.generateToken(user, TokenStatus.NEW);
+        userRepository.save(user);
     }
 }

@@ -8,6 +8,6 @@ import site.pistudio.backend.entities.firestore.Message;
 import java.util.List;
 
 public interface MessageRepository extends DatastoreRepository<Message, Long> {
-    Page<Message> findByOrder_OrderNumberOrderByTimeAsc(long id, Pageable pageable);
-    List<Message> findByOrder_OrderNumberOrderByTimeAsc(long id);
+    Page<Message> findByOrderNumberOrderByTimeAsc(long id, Pageable pageable);
+    List<Message> findByOrderNumberOrderByTimeAsc(long id);
 }

@@ -1,12 +1,12 @@
 package site.pistudio.backend.services;
 
 import org.springframework.stereotype.Service;
-import site.pistudio.backend.dao.mysql.OrderRepository;
-import site.pistudio.backend.dao.mysql.ScheduleRepository;
-import site.pistudio.backend.dto.mysql.OrderResponse;
-import site.pistudio.backend.dto.mysql.OrderRequest;
-import site.pistudio.backend.entities.mysql.Order;
-import site.pistudio.backend.entities.mysql.Schedule;
+import site.pistudio.backend.dao.firestore.OrderRepository;
+import site.pistudio.backend.dao.firestore.ScheduleRepository;
+import site.pistudio.backend.dto.firestore.OrderResponse;
+import site.pistudio.backend.dto.firestore.OrderRequest;
+import site.pistudio.backend.entities.firestore.Order;
+import site.pistudio.backend.entities.firestore.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.utils.OrderStatus;
 
@@ -62,7 +62,7 @@ public class OrderService {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         checkIfValidOrder(orderNumber, openId, order);
         List<Schedule> schedules = scheduleRepository
-                .findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+                .findSchedulesByOrderNumberOrderByTime(order.getOrderNumber());
         return OrderResponse.OrderToResponse(order, schedules);
     }
 
@@ -90,7 +90,7 @@ public class OrderService {
         List<OrderResponse> orderClientBodies = new ArrayList<>();
         for (Order order : orders) {
             List<Schedule> schedules =
-                    scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
+                    scheduleRepository.findSchedulesByOrderNumberOrderByTime(order.getOrderNumber());
             orderClientBodies.add(OrderResponse.OrderToResponse(order, schedules));
         }
         return orderClientBodies;
@@ -102,13 +102,13 @@ public class OrderService {
         switch (order.getOrderStatus()) {
             case PLACED:
                 if (schedule == null ||
-                        scheduleRepository.findScheduleByOrder_OrderNumberAndTime(orderNumber, schedule) == null) {
+                        scheduleRepository.findScheduleByOrderNumberAndTime(orderNumber, schedule) == null) {
                     throw new IllegalArgumentException("Provided schedule is invalid!");
                 }
                 List<LocalDateTime> schedules = new LinkedList<>();
                 schedules.add(schedule);
                 order.setOrderStatus(OrderStatus.RECEIVED);
-                scheduleRepository.deleteScheduleByOrder_OrderNumberAndTimeNotIn(orderNumber, schedules);
+                scheduleRepository.deleteScheduleByOrderNumberAndTimeNotIn(orderNumber, schedules);
                 break;
             case RECEIVED:
                 order.setOrderStatus(OrderStatus.IMAGING);
@@ -125,7 +125,7 @@ public class OrderService {
 
         orderRepository.save(order);
         return OrderResponse.OrderToResponse(order,
-                scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(orderNumber));
+                scheduleRepository.findSchedulesByOrderNumberOrderByTime(orderNumber));
     }
 
 

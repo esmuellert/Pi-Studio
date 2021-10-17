@@ -1,13 +1,16 @@
 package site.pistudio.backend.configurations;
 
+import com.google.cloud.datastore.Key;
 import org.springframework.cloud.gcp.data.datastore.core.convert.DatastoreCustomConversions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
+
+import static com.google.cloud.spring.data.spanner.core.convert.SpannerConverters.LOCAL_DATE_TIME_TIMESTAMP_CONVERTER;
+import static com.google.cloud.spring.data.spanner.core.convert.SpannerConverters.TIMESTAMP_LOCAL_DATE_TIME_CONVERTER;
 
 @Configuration
 public class ConverterConfiguration {
@@ -48,6 +51,9 @@ public class ConverterConfiguration {
                 Arrays.asList(LOCAL_DATE_TIME_STRING_CONVERTER_STRING_CONVERTER,
                         STRING_LOCAL_DATE_TIME_CONVERTER_CONVERTER,
                         UUID_STRING_CONVERTER,
-                        STRING_UUID_CONVERTER));
+                        STRING_UUID_CONVERTER,
+                        LOCAL_DATE_TIME_TIMESTAMP_CONVERTER,
+                        TIMESTAMP_LOCAL_DATE_TIME_CONVERTER
+                        ));
     }
 }
