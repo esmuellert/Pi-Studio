@@ -47,12 +47,12 @@ public class OrderService {
         order.setOrderedTime(LocalDateTime.now());
         orderRepository.save(order);
 
-        for (LocalDateTime time : orderForm.getSchedule()) {
-            Schedule schedule = new Schedule();
-            schedule.setTime(time);
-            schedule.setOrder(order);
-            scheduleRepository.save(schedule);
-        }
+//        for (LocalDateTime time : orderForm.getSchedule()) {
+//            Schedule schedule = new Schedule();
+//            schedule.setTime(time);
+//            schedule.setOrder(order);
+//            scheduleRepository.save(schedule);
+//        }
         OrderClientBody orderClientBody = OrderClientBody.orderToClientBody(order);
         orderClientBody.setSchedule(orderForm.getSchedule());
         return orderClientBody;

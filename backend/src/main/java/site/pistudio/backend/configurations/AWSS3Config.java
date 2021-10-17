@@ -1,4 +1,4 @@
-package site.pistudio.backend.s3config;
+package site.pistudio.backend.configurations;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
