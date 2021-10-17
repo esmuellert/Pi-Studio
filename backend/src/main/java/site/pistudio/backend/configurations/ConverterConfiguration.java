@@ -7,6 +7,7 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Configuration
 public class ConverterConfiguration {
@@ -27,10 +28,26 @@ public class ConverterConfiguration {
                 }
             };
 
+    static final Converter<UUID, String> UUID_STRING_CONVERTER = new Converter<UUID, String>() {
+        @Override
+        public String convert(UUID uuid) {
+            return uuid.toString();
+        }
+    };
+
+    static final Converter<String, UUID> STRING_UUID_CONVERTER = new Converter<String, UUID>() {
+        @Override
+        public UUID convert(String s) {
+            return UUID.fromString(s);
+        }
+    };
+
     @Bean
     public DatastoreCustomConversions datastoreCustomConversions() {
         return new DatastoreCustomConversions(
                 Arrays.asList(LOCAL_DATE_TIME_STRING_CONVERTER_STRING_CONVERTER,
-                        STRING_LOCAL_DATE_TIME_CONVERTER_CONVERTER));
+                        STRING_LOCAL_DATE_TIME_CONVERTER_CONVERTER,
+                        UUID_STRING_CONVERTER,
+                        STRING_UUID_CONVERTER));
     }
 }

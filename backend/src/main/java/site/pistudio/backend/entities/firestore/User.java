@@ -1,17 +1,16 @@
 package site.pistudio.backend.entities.firestore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
+import org.springframework.data.annotation.Id;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 public class User implements Role {
     @Id
-    @Column(columnDefinition = "BINARY(16)")
-    private String id;
+    private UUID id;
 
-    @Column(unique = true)
     private String openId;
 
     private LocalDateTime registerDate;
@@ -19,12 +18,12 @@ public class User implements Role {
     private byte[] tokenSecret;
 
     @Override
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

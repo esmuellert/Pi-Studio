@@ -3,18 +3,20 @@ package site.pistudio.backend.entities.firestore;
 import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
 import org.springframework.data.annotation.Id;
 
+import java.util.UUID;
+
 @Entity
 public class Image {
     @Id
-    private String id;
+    private UUID id;
 
     private String type;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
