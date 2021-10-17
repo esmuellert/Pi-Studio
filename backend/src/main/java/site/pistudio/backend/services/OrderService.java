@@ -3,8 +3,8 @@ package site.pistudio.backend.services;
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.mysql.OrderRepository;
 import site.pistudio.backend.dao.mysql.ScheduleRepository;
-import site.pistudio.backend.dto.mysql.OrderClientBody;
-import site.pistudio.backend.dto.mysql.OrderForm;
+import site.pistudio.backend.dto.mysql.OrderResponse;
+import site.pistudio.backend.dto.mysql.OrderRequest;
 import site.pistudio.backend.entities.mysql.Order;
 import site.pistudio.backend.entities.mysql.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
@@ -32,18 +32,18 @@ public class OrderService {
     }
 
 
-    public OrderClientBody placeOrder(OrderForm orderForm) {
+    public OrderResponse placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
-        String openId = verifyTokenService.verifyToken(orderForm.getToken());
+        String openId = verifyTokenService.verifyToken(orderRequest.getToken());
         long orderNumber = generateValidOrderNumber();
 
         order.setOrderNumber(orderNumber);
         order.setOrderStatus(OrderStatus.PLACED);
-        order.setWechatId(orderForm.getWechatId());
+        order.setWechatId(orderRequest.getWechatId());
         order.setOpenId(openId);
-        order.setPhoneNumber(orderForm.getPhoneNumber());
-        order.setType(orderForm.getType());
-        order.setNotes(orderForm.getNotes());
+        order.setPhoneNumber(orderRequest.getPhoneNumber());
+        order.setType(orderRequest.getType());
+        order.setNotes(orderRequest.getNotes());
         order.setOrderedTime(LocalDateTime.now());
         orderRepository.save(order);
 
@@ -53,17 +53,17 @@ public class OrderService {
 //            schedule.setOrder(order);
 //            scheduleRepository.save(schedule);
 //        }
-        OrderClientBody orderClientBody = OrderClientBody.orderToClientBody(order);
-        orderClientBody.setSchedule(orderForm.getSchedule());
-        return orderClientBody;
+        OrderResponse orderResponse = OrderResponse.orderToResponse(order);
+        orderResponse.setSchedule(orderRequest.getSchedule());
+        return orderResponse;
     }
 
-    public OrderClientBody getOrderByOrderNumber(long orderNumber, String openId) {
+    public OrderResponse getOrderByOrderNumber(long orderNumber, String openId) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         checkIfValidOrder(orderNumber, openId, order);
         List<Schedule> schedules = scheduleRepository
                 .findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
-        return OrderClientBody.OrderToClientBody(order, schedules);
+        return OrderResponse.OrderToResponse(order, schedules);
     }
 
     static void checkIfValidOrder(long orderNumber, String openId, Order order) {
@@ -76,27 +76,27 @@ public class OrderService {
         }
     }
 
-    public List<OrderClientBody> getOrdersByOpenId(String openId) {
+    public List<OrderResponse> getOrdersByOpenId(String openId) {
         List<Order> orders = orderRepository.findOrdersByOpenIdOrderByOrderedTime(openId);
         return ordersToClientBodies(orders);
     }
 
-    public List<OrderClientBody> getOrdersForAdmin(OrderStatus status) {
+    public List<OrderResponse> getOrdersForAdmin(OrderStatus status) {
         List<Order> orders = orderRepository.findAllByOrderByOrderedTime();
         return ordersToClientBodies(orders);
     }
 
-    private List<OrderClientBody> ordersToClientBodies(List<Order> orders) {
-        List<OrderClientBody> orderClientBodies = new ArrayList<>();
+    private List<OrderResponse> ordersToClientBodies(List<Order> orders) {
+        List<OrderResponse> orderClientBodies = new ArrayList<>();
         for (Order order : orders) {
             List<Schedule> schedules =
                     scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(order.getOrderNumber());
-            orderClientBodies.add(OrderClientBody.OrderToClientBody(order, schedules));
+            orderClientBodies.add(OrderResponse.OrderToResponse(order, schedules));
         }
         return orderClientBodies;
     }
 
-    public OrderClientBody setOrderStatus(LocalDateTime schedule, Long orderNumber) {
+    public OrderResponse setOrderStatus(LocalDateTime schedule, Long orderNumber) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
 
         switch (order.getOrderStatus()) {
@@ -124,7 +124,7 @@ public class OrderService {
         }
 
         orderRepository.save(order);
-        return OrderClientBody.OrderToClientBody(order,
+        return OrderResponse.OrderToResponse(order,
                 scheduleRepository.findSchedulesByOrder_OrderNumberOrderByTime(orderNumber));
     }
 

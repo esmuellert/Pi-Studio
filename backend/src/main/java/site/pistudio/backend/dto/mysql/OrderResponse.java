@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderClientBody {
+public class OrderResponse {
     private long orderNumber;
     private OrderStatus orderStatus;
     private String type;
@@ -82,29 +82,29 @@ public class OrderClientBody {
         this.wechatId = wechatId;
     }
 
-    public static OrderClientBody OrderToClientBody(Order order, List<Schedule> schedules) {
-        OrderClientBody orderClientBody =  setBodyFromOrder(order);
+    public static OrderResponse OrderToResponse(Order order, List<Schedule> schedules) {
+        OrderResponse orderResponse =  setBodyFromOrder(order);
         List<LocalDateTime> times = new ArrayList<>();
         for (Schedule schedule : schedules) {
             times.add(schedule.getTime());
         }
-        orderClientBody.setSchedule(times);
-        return orderClientBody;
+        orderResponse.setSchedule(times);
+        return orderResponse;
     }
 
-    public static OrderClientBody orderToClientBody(Order order) {
+    public static OrderResponse orderToResponse(Order order) {
         return setBodyFromOrder(order);
     }
 
-    private static OrderClientBody setBodyFromOrder(Order order) {
-        OrderClientBody orderClientBody = new OrderClientBody();
-        orderClientBody.setNotes(order.getNotes());
-        orderClientBody.setOrderedTime(order.getOrderedTime());
-        orderClientBody.setOrderNumber(order.getOrderNumber());
-        orderClientBody.setOrderStatus(order.getOrderStatus());
-        orderClientBody.setPhoneNumber(order.getPhoneNumber());
-        orderClientBody.setType(order.getType());
-        orderClientBody.setWechatId(order.getWechatId());
-        return orderClientBody;
+    private static OrderResponse setBodyFromOrder(Order order) {
+        OrderResponse orderResponse = new OrderResponse();
+        orderResponse.setNotes(order.getNotes());
+        orderResponse.setOrderedTime(order.getOrderedTime());
+        orderResponse.setOrderNumber(order.getOrderNumber());
+        orderResponse.setOrderStatus(order.getOrderStatus());
+        orderResponse.setPhoneNumber(order.getPhoneNumber());
+        orderResponse.setType(order.getType());
+        orderResponse.setWechatId(order.getWechatId());
+        return orderResponse;
     }
 }

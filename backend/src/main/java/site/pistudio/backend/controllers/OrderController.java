@@ -2,8 +2,8 @@ package site.pistudio.backend.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import site.pistudio.backend.dto.mysql.OrderClientBody;
-import site.pistudio.backend.dto.mysql.OrderForm;
+import site.pistudio.backend.dto.mysql.OrderResponse;
+import site.pistudio.backend.dto.mysql.OrderRequest;
 import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.OrderService;
 import site.pistudio.backend.services.VerifyTokenService;
@@ -29,22 +29,22 @@ public class OrderController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderClientBody placeOrder(@RequestBody OrderForm orderForm,
-                                      @RequestHeader(name = "Authorization") String token) {
-        orderForm.setToken(token);
-        return orderService.placeOrder(orderForm);
+    public OrderResponse placeOrder(@RequestBody OrderRequest orderRequest,
+                                    @RequestHeader(name = "Authorization") String token) {
+        orderRequest.setToken(token);
+        return orderService.placeOrder(orderRequest);
     }
 
     @GetMapping("/{id}")
-    public OrderClientBody getOrderById(@PathVariable("id") Long id,
-                                        @RequestHeader(name = "Authorization") String token) {
+    public OrderResponse getOrderById(@PathVariable("id") Long id,
+                                      @RequestHeader(name = "Authorization") String token) {
         String openId = verifyTokenService.verifyToken(token);
         return orderService.getOrderByOrderNumber(id, openId);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderClientBody> getOrders(@RequestHeader(name = "Authorization") String token) {
+    public List<OrderResponse> getOrders(@RequestHeader(name = "Authorization") String token) {
         String openId = verifyTokenService.verifyToken(token);
         if (openId.equals("admin")) {
             return orderService.getOrdersForAdmin(null);
@@ -55,9 +55,9 @@ public class OrderController {
     @Transactional
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderClientBody setOrderStatus(@RequestHeader(name = "Authorization") String token,
-                                          @RequestBody(required = false) Map<String, String> body,
-                                          @PathVariable(name = "id") Long id) {
+    public OrderResponse setOrderStatus(@RequestHeader(name = "Authorization") String token,
+                                        @RequestBody(required = false) Map<String, String> body,
+                                        @PathVariable(name = "id") Long id) {
         String openId = verifyTokenService.verifyToken(token);
         if (!openId.equals("admin")) {
             throw new InvalidTokenException();

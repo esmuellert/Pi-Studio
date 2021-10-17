@@ -3,7 +3,7 @@ package site.pistudio.backend.dto.mysql;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class OrderForm {
+public class OrderRequest {
     private String wechatId;
     private String phoneNumber;
     private String type;
