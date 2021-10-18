@@ -25,14 +25,14 @@ public class OnStartApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Admin admin =  adminRepository.findAdminByUsername("yanuo");
-        if (admin == null) {
-            Admin yanuo = new Admin();
-            yanuo.setUsername("yanuo");
-            yanuo.setId(UUID.randomUUID());
-            yanuo.setPassword(bCryptPasswordEncoder.encode("980508"));
-            loginService.generateToken(yanuo, TokenStatus.RENEW);
-            adminRepository.save(yanuo);
-        }
+//        Admin admin =  adminRepository.findByUsername("yanuo");
+//        if (admin == null) {
+//            Admin yanuo = new Admin();
+//            yanuo.setUsername("yanuo");
+//            yanuo.setId(UUID.randomUUID());
+//            yanuo.setPassword(bCryptPasswordEncoder.encode("980508"));
+//            loginService.generateToken(yanuo, TokenStatus.RENEW);
+//            adminRepository.save(yanuo);
+//        }
     }
 }

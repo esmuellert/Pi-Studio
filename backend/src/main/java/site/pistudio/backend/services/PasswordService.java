@@ -22,7 +22,7 @@ public class PasswordService {
     }
 
     public String resetPassword(String username, String oldPassword, String newPassword) throws IllegalAdminException {
-        Admin admin = adminRepository.findAdminByUsername(username);
+        Admin admin = adminRepository.findByUsername(username);
         if (admin == null || !bCryptPasswordEncoder.matches(oldPassword, admin.getPassword())) {
             throw new IllegalAdminException();
         }

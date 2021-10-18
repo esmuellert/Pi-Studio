@@ -33,7 +33,7 @@ public class VerifyTokenService {
             List<String> idList = jwt.getAudience();
             String id = idList.get(0);
             if (id.length() < 30) {
-                role = adminRepository.findAdminByUsername(id);
+                role = adminRepository.findByUsername(id);
             } else {
                 role = userRepository.findUserById(UUID.fromString(id));
             }

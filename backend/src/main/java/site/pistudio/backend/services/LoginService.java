@@ -138,7 +138,7 @@ public class LoginService {
             expiresAt = role.getTokenExpired();
         } else {
             secret = new byte[64];
-            new Random(Instant.now().toEpochMilli()).nextBytes(secret);
+            new Random().nextBytes(secret);
             issuedAt = LocalDateTime.now();
             expiresAt = issuedAt.plusWeeks(1);
         }
@@ -165,7 +165,7 @@ public class LoginService {
     }
 
     public String adminLogin(String username, String password) throws IllegalAdminException {
-        Admin admin = adminRepository.findAdminByUsername(username);
+        Admin admin = adminRepository.findByUsername(username);
         if (admin == null || !bCryptPasswordEncoder.matches(password, admin.getPassword())) {
             throw new IllegalAdminException();
         }

@@ -1,6 +1,6 @@
 package site.pistudio.backend.dao.firestore;
 
-import org.springframework.cloud.gcp.data.datastore.repository.DatastoreRepository;
+import com.google.cloud.spring.data.datastore.repository.DatastoreRepository;
 import site.pistudio.backend.entities.firestore.Image;
 
 import java.util.List;

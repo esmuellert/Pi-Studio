@@ -1,10 +1,12 @@
 package site.pistudio.backend.configurations;
 
-import com.google.cloud.datastore.Key;
-import org.springframework.cloud.gcp.data.datastore.core.convert.DatastoreCustomConversions;
+import com.google.cloud.datastore.Blob;
+import com.google.cloud.spring.data.datastore.core.convert.DatastoreCustomConversions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
@@ -45,6 +47,13 @@ public class ConverterConfiguration {
         }
     };
 
+    static final Converter<Blob, byte[]> BLOB_TO_BYTE_ARRAY_CONVERTER = new Converter<Blob, byte[]>() {
+        @Override
+        public byte[] convert(Blob source) {
+            return source.toByteArray();
+        }
+    };
+
     @Bean
     public DatastoreCustomConversions datastoreCustomConversions() {
         return new DatastoreCustomConversions(
@@ -53,7 +62,8 @@ public class ConverterConfiguration {
                         UUID_STRING_CONVERTER,
                         STRING_UUID_CONVERTER,
                         LOCAL_DATE_TIME_TIMESTAMP_CONVERTER,
-                        TIMESTAMP_LOCAL_DATE_TIME_CONVERTER
+                        TIMESTAMP_LOCAL_DATE_TIME_CONVERTER,
+                        BLOB_TO_BYTE_ARRAY_CONVERTER
                         ));
     }
 }

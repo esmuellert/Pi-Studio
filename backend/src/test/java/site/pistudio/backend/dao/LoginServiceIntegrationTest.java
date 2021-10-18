@@ -51,11 +51,15 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void addAdmin() {
-        Admin yanuo = new Admin();
-        yanuo.setUsername("yanuo");
-        yanuo.setPassword(bCryptPasswordEncoder.encode("980508"));
-        loginService.generateToken(yanuo, TokenStatus.RENEW);
-        adminRepository.save(yanuo);
+        Admin admin =  adminRepository.findByUsername("yanuo");
+        if (admin == null) {
+            Admin yanuo = new Admin();
+            yanuo.setUsername("yanuo");
+            yanuo.setId(UUID.randomUUID());
+            yanuo.setPassword(bCryptPasswordEncoder.encode("980508"));
+            loginService.generateToken(yanuo, TokenStatus.NEW);
+            adminRepository.save(yanuo);
+        }
     }
 
     @Test
@@ -65,5 +69,10 @@ public class LoginServiceIntegrationTest {
         user.setOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
         loginService.generateToken(user, TokenStatus.NEW);
         userRepository.save(user);
+    }
+
+    @Test
+    public void findUser() {
+        User user = userRepository.findUserByOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
     }
 }

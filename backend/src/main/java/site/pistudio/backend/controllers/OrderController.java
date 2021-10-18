@@ -8,7 +8,6 @@ import site.pistudio.backend.exceptions.InvalidTokenException;
 import site.pistudio.backend.services.OrderService;
 import site.pistudio.backend.services.VerifyTokenService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,6 @@ public class OrderController {
         return orderService.getOrdersByOpenId(openId);
     }
 
-    @Transactional
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public OrderResponse setOrderStatus(@RequestHeader(name = "Authorization") String token,

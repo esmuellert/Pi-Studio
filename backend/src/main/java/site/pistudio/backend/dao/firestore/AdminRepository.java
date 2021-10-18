@@ -1,8 +1,9 @@
 package site.pistudio.backend.dao.firestore;
 
-import org.springframework.cloud.gcp.data.datastore.repository.DatastoreRepository;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.spring.data.datastore.repository.DatastoreRepository;
 import site.pistudio.backend.entities.firestore.Admin;
 
-public interface AdminRepository extends DatastoreRepository<Admin, Long> {
-    Admin findAdminByUsername(String username);
+public interface AdminRepository extends DatastoreRepository<Admin, Key> {
+    Admin findByUsername(String username);
 }

@@ -1,7 +1,7 @@
 package site.pistudio.backend.entities.firestore;
 
 import com.google.cloud.datastore.Key;
-import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
+import com.google.cloud.spring.data.datastore.core.mapping.Entity;
 import org.springframework.data.annotation.Id;
 import site.pistudio.backend.utils.MessageSender;
 
