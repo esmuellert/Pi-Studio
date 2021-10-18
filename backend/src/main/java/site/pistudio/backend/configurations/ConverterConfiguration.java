@@ -1,18 +1,18 @@
 package site.pistudio.backend.configurations;
 
-import com.google.cloud.datastore.Blob;
+
+
 import com.google.cloud.spring.data.datastore.core.convert.DatastoreCustomConversions;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.UUID;
 
-import static com.google.cloud.spring.data.spanner.core.convert.SpannerConverters.LOCAL_DATE_TIME_TIMESTAMP_CONVERTER;
-import static com.google.cloud.spring.data.spanner.core.convert.SpannerConverters.TIMESTAMP_LOCAL_DATE_TIME_CONVERTER;
 
 @Configuration
 public class ConverterConfiguration {
@@ -47,12 +47,19 @@ public class ConverterConfiguration {
         }
     };
 
-    static final Converter<Blob, byte[]> BLOB_TO_BYTE_ARRAY_CONVERTER = new Converter<Blob, byte[]>() {
-        @Override
-        public byte[] convert(Blob source) {
-            return source.toByteArray();
-        }
-    };
+static final Converter<byte[], String> BYTES_STRING_CONVERTER = new Converter<byte[], String>() {
+    @Override
+    public String convert(byte[] source) {
+        return Base64.getUrlEncoder().encodeToString(source);
+    }
+};
+
+static final Converter<String, byte[]> STRING_BYTES_CONVERTER = new Converter<String, byte[]>() {
+    @Override
+    public byte[] convert(String source) {
+        return Base64.getUrlDecoder().decode(source);
+    }
+};
 
     @Bean
     public DatastoreCustomConversions datastoreCustomConversions() {
@@ -61,9 +68,8 @@ public class ConverterConfiguration {
                         STRING_LOCAL_DATE_TIME_CONVERTER_CONVERTER,
                         UUID_STRING_CONVERTER,
                         STRING_UUID_CONVERTER,
-                        LOCAL_DATE_TIME_TIMESTAMP_CONVERTER,
-                        TIMESTAMP_LOCAL_DATE_TIME_CONVERTER,
-                        BLOB_TO_BYTE_ARRAY_CONVERTER
+                        BYTES_STRING_CONVERTER,
+                        STRING_BYTES_CONVERTER
                         ));
     }
 }

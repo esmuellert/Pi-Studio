@@ -7,16 +7,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import site.pistudio.backend.dao.firestore.AdminRepository;
+import site.pistudio.backend.dao.firestore.ScheduleRepository;
 import site.pistudio.backend.dao.firestore.UserRepository;
 import site.pistudio.backend.entities.firestore.Admin;
+import site.pistudio.backend.entities.firestore.Schedule;
 import site.pistudio.backend.entities.firestore.User;
 import site.pistudio.backend.services.LoginService;
 import site.pistudio.backend.services.VerifyTokenService;
 import site.pistudio.backend.utils.TokenStatus;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -29,6 +32,9 @@ public class LoginServiceIntegrationTest {
 
     @Autowired
     AdminRepository adminRepository;
+
+    @Autowired
+    ScheduleRepository scheduleRepository;
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -51,7 +57,7 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void addAdmin() {
-        Admin admin =  adminRepository.findByUsername("yanuo");
+        Admin admin =  adminRepository.findOneByUsername("yanuo");
         if (admin == null) {
             Admin yanuo = new Admin();
             yanuo.setUsername("yanuo");
@@ -67,12 +73,27 @@ public class LoginServiceIntegrationTest {
         User user = new User();
         user.setRegisterDate(LocalDateTime.now());
         user.setOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
-        loginService.generateToken(user, TokenStatus.NEW);
+        System.out.println(loginService.generateToken(user, TokenStatus.NEW));;
         userRepository.save(user);
     }
 
     @Test
     public void findUser() {
         User user = userRepository.findUserByOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
+        System.out.println(user.getTokenExpired());
+    }
+
+    @Test
+    public void scheduleCRUD() {
+        Optional<Schedule> schedule = scheduleRepository.findScheduleById(1L);
+        schedule.ifPresent(s -> {
+            System.out.println(s.getTime());
+        });
+        byte[] bytes = new byte[64];
+        new Random().nextBytes(bytes);
+        System.out.println(Arrays.toString(bytes));
+        String encoded = Base64.getUrlEncoder().encodeToString(bytes);
+        System.out.println(encoded);
+        System.out.println(Arrays.toString(Base64.getUrlDecoder().decode(encoded)));
     }
 }

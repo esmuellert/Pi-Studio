@@ -6,4 +6,6 @@ import site.pistudio.backend.entities.firestore.Admin;
 
 public interface AdminRepository extends DatastoreRepository<Admin, Key> {
     Admin findByUsername(String username);
+
+    Admin findOneByUsername(String yanuo);
 }
