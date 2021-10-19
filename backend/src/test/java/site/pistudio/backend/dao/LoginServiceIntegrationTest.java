@@ -85,15 +85,5 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void scheduleCRUD() {
-        Optional<Schedule> schedule = scheduleRepository.findScheduleById(1L);
-        schedule.ifPresent(s -> {
-            System.out.println(s.getTime());
-        });
-        byte[] bytes = new byte[64];
-        new Random().nextBytes(bytes);
-        System.out.println(Arrays.toString(bytes));
-        String encoded = Base64.getUrlEncoder().encodeToString(bytes);
-        System.out.println(encoded);
-        System.out.println(Arrays.toString(Base64.getUrlDecoder().decode(encoded)));
     }
 }

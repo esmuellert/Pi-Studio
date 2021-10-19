@@ -3,8 +3,8 @@ package site.pistudio.backend.services;
 import org.springframework.stereotype.Service;
 import site.pistudio.backend.dao.firestore.OrderRepository;
 import site.pistudio.backend.dao.firestore.ScheduleRepository;
-import site.pistudio.backend.dto.firestore.OrderResponse;
 import site.pistudio.backend.dto.firestore.OrderRequest;
+import site.pistudio.backend.dto.firestore.OrderResponse;
 import site.pistudio.backend.entities.firestore.Order;
 import site.pistudio.backend.entities.firestore.Schedule;
 import site.pistudio.backend.exceptions.InvalidTokenException;
@@ -12,7 +12,11 @@ import site.pistudio.backend.utils.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -31,6 +35,15 @@ public class OrderService {
         this.scheduleRepository = scheduleRepository;
     }
 
+    static void checkIfValidOrder(long orderNumber, String openId, Order order) {
+
+        if (order == null) {
+            throw new NoSuchElementException("Order: " + orderNumber + " not found!");
+        }
+        if (!openId.equals(order.getOpenId()) && !openId.equals("admin")) {
+            throw new InvalidTokenException(openId);
+        }
+    }
 
     public OrderResponse placeOrder(OrderRequest orderRequest) {
         Order order = new Order();
@@ -45,14 +58,15 @@ public class OrderService {
         order.setType(orderRequest.getType());
         order.setNotes(orderRequest.getNotes());
         order.setOrderedTime(LocalDateTime.now());
+        List<Schedule> schedules = new ArrayList<>();
+        orderRequest.getSchedule().forEach(time -> {
+            Schedule schedule = new Schedule();
+            schedule.setTime(time);
+            schedule.setOrderNumber(order.getOrderNumber());
+            schedules.add(schedule);
+        });
+        order.setSchedules(schedules);
         orderRepository.save(order);
-
-//        for (LocalDateTime time : orderForm.getSchedule()) {
-//            Schedule schedule = new Schedule();
-//            schedule.setTime(time);
-//            schedule.setOrder(order);
-//            scheduleRepository.save(schedule);
-//        }
         OrderResponse orderResponse = OrderResponse.orderToResponse(order);
         orderResponse.setSchedule(orderRequest.getSchedule());
         return orderResponse;
@@ -61,19 +75,7 @@ public class OrderService {
     public OrderResponse getOrderByOrderNumber(long orderNumber, String openId) {
         Order order = orderRepository.findByOrderNumber(orderNumber);
         checkIfValidOrder(orderNumber, openId, order);
-        List<Schedule> schedules = scheduleRepository
-                .findSchedulesByOrderNumberOrderByTime(order.getOrderNumber());
-        return OrderResponse.OrderToResponse(order, schedules);
-    }
-
-    static void checkIfValidOrder(long orderNumber, String openId, Order order) {
-
-        if (order == null) {
-            throw new NoSuchElementException("Order: " + orderNumber + " not found!");
-        }
-        if (!openId.equals(order.getOpenId()) && !openId.equals("admin")) {
-            throw new InvalidTokenException(openId);
-        }
+        return OrderResponse.orderToResponse(order);
     }
 
     public List<OrderResponse> getOrdersByOpenId(String openId) {
@@ -82,16 +84,14 @@ public class OrderService {
     }
 
     public List<OrderResponse> getOrdersForAdmin(OrderStatus status) {
-        List<Order> orders = orderRepository.findAllByOrderByOrderedTime();
+        List<Order> orders = orderRepository.findAllOrderByOrderedTime();
         return ordersToClientBodies(orders);
     }
 
     private List<OrderResponse> ordersToClientBodies(List<Order> orders) {
         List<OrderResponse> orderClientBodies = new ArrayList<>();
         for (Order order : orders) {
-            List<Schedule> schedules =
-                    scheduleRepository.findSchedulesByOrderNumberOrderByTime(order.getOrderNumber());
-            orderClientBodies.add(OrderResponse.OrderToResponse(order, schedules));
+            orderClientBodies.add(OrderResponse.orderToResponse(order));
         }
         return orderClientBodies;
     }
@@ -101,14 +101,23 @@ public class OrderService {
 
         switch (order.getOrderStatus()) {
             case PLACED:
+                List<Schedule> timeSchedule =
+                        order.getSchedules().stream().filter(s -> s.getTime().equals(schedule))
+                                .collect(Collectors.toList());
                 if (schedule == null ||
-                        scheduleRepository.findScheduleByOrderNumberAndTime(orderNumber, schedule) == null) {
+                        timeSchedule.isEmpty()) {
                     throw new IllegalArgumentException("Provided schedule is invalid!");
                 }
-                List<LocalDateTime> schedules = new LinkedList<>();
-                schedules.add(schedule);
+                List<Schedule> deletedSchedules =
+                        order.getSchedules().stream().filter(s -> !s.getTime().equals(schedule)).collect(
+                                Collectors.toList());
                 order.setOrderStatus(OrderStatus.RECEIVED);
-                scheduleRepository.deleteScheduleByOrderNumberAndTimeNotIn(orderNumber, schedules);
+                order.setSchedules(timeSchedule);
+                scheduleRepository.performTransaction(scheduleLongDatastoreRepository -> {
+                    scheduleRepository.deleteAll(deletedSchedules);
+                    orderRepository.save(order);
+                    return "Successfully deleted ruled out schedules.";
+                });
                 break;
             case RECEIVED:
                 order.setOrderStatus(OrderStatus.IMAGING);
@@ -123,9 +132,10 @@ public class OrderService {
                 throw new IllegalArgumentException("Order status is not valid!");
         }
 
-        orderRepository.save(order);
-        return OrderResponse.OrderToResponse(order,
-                scheduleRepository.findSchedulesByOrderNumberOrderByTime(orderNumber));
+        if (order.getOrderStatus() != OrderStatus.PLACED) {
+            orderRepository.save(order);
+        }
+        return OrderResponse.orderToResponse(order);
     }
 
 

@@ -1,6 +1,7 @@
 package site.pistudio.backend.dao.firestore;
 
 import com.google.cloud.spring.data.datastore.repository.DatastoreRepository;
+import com.google.cloud.spring.data.datastore.repository.query.Query;
 import org.springframework.stereotype.Repository;
 import site.pistudio.backend.entities.firestore.Order;
 
@@ -15,7 +16,9 @@ public interface OrderRepository extends DatastoreRepository<Order, Long> {
 
     List<Order> findOrdersByOpenIdOrderByOrderedTime(String id);
 
-    List<Order> findAllByOrderByOrderedTime();
+    @Query("SELECT * FROM `order` ORDER BY orderedTime")
+    List<Order> findAllOrderByOrderedTime();
 
+    List<Order> findOrderByOpenId(String id);
 
 }

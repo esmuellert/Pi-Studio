@@ -16,7 +16,7 @@ public class Admin implements Role {
     private String username;
     private String password;
     private LocalDateTime tokenExpired;
-    private byte[] tokenSecret;
+    private String tokenSecret;
 
     @Override
     public UUID getId() {
@@ -55,12 +55,12 @@ public class Admin implements Role {
     }
 
     @Override
-    public byte[] getTokenSecret() {
+    public String getTokenSecret() {
         return tokenSecret;
     }
 
     @Override
-    public void setTokenSecret(byte[] token_secret) {
+    public void setTokenSecret(String token_secret) {
         this.tokenSecret = token_secret;
     }
 }

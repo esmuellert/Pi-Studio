@@ -27,6 +27,7 @@ public class ImageService {
         if (!order.getOrderStatus().equals(OrderStatus.PROCESSING)) {
             throw new UnsupportedOperationException("Uploading image is not allowed at this stage!");
         }
+        image.setId(UUID.randomUUID());
         return imageRepository.save(image);
     }
 

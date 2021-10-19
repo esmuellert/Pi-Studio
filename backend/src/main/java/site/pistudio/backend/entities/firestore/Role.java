@@ -11,9 +11,9 @@ public interface Role {
 
     public void setTokenExpired(LocalDateTime tokenExpired);
 
-    public byte[] getTokenSecret();
+    public String getTokenSecret();
 
-    public void setTokenSecret(byte[] tokenSecret);
+    public void setTokenSecret(String tokenSecret);
 
     public UUID getId();
 

@@ -20,7 +20,6 @@ import site.pistudio.backend.exceptions.IllegalAdminException;
 import site.pistudio.backend.exceptions.InvalidCodeException;
 import site.pistudio.backend.utils.TokenStatus;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -129,7 +128,8 @@ public class LoginService {
             id = role.getId().toString();
         }
 
-        byte[] secret;
+        byte[] bytes;
+        String secret;
         LocalDateTime issuedAt;
         LocalDateTime expiresAt;
         if (isAdmin && status == TokenStatus.GENERATE) {
@@ -137,8 +137,9 @@ public class LoginService {
             issuedAt = role.getTokenExpired().minusWeeks(1);
             expiresAt = role.getTokenExpired();
         } else {
-            secret = new byte[64];
-            new Random().nextBytes(secret);
+            bytes = new byte[64];
+            new Random().nextBytes(bytes);
+            secret = Base64.getUrlEncoder().encodeToString(bytes);
             issuedAt = LocalDateTime.now();
             expiresAt = issuedAt.plusWeeks(1);
         }

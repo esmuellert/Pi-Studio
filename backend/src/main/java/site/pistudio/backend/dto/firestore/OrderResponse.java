@@ -18,6 +18,35 @@ public class OrderResponse {
     private String wechatId;
     private List<LocalDateTime> schedule;
 
+    public OrderResponse(long orderNumber, OrderStatus orderStatus, String type, LocalDateTime orderedTime,
+                         String phoneNumber, String notes, String wechatId,
+                         List<LocalDateTime> schedule) {
+        this.orderNumber = orderNumber;
+        this.orderStatus = orderStatus;
+        this.type = type;
+        this.orderedTime = orderedTime;
+        this.phoneNumber = phoneNumber;
+        this.notes = notes;
+        this.wechatId = wechatId;
+        this.schedule = schedule;
+    }
+
+    public static OrderResponse orderToResponse(Order order) {
+        return setBodyFromOrder(order);
+    }
+
+    private static OrderResponse setBodyFromOrder(Order order) {
+        List<LocalDateTime> times = new ArrayList<>();
+        for (Schedule schedule : order.getSchedules()) {
+            times.add(schedule.getTime());
+        }
+        OrderResponse orderResponse = new OrderResponse(order.getOrderNumber(), order.getOrderStatus(),
+                order.getType(), order.getOrderedTime(), order.getPhoneNumber(), order.getNotes(), order.getWechatId(),
+                times);
+        ;
+        return orderResponse;
+    }
+
     public long getOrderNumber() {
         return orderNumber;
     }
@@ -80,31 +109,5 @@ public class OrderResponse {
 
     public void setWechatId(String wechatId) {
         this.wechatId = wechatId;
-    }
-
-    public static OrderResponse OrderToResponse(Order order, List<Schedule> schedules) {
-        OrderResponse orderResponse =  setBodyFromOrder(order);
-        List<LocalDateTime> times = new ArrayList<>();
-        for (Schedule schedule : schedules) {
-            times.add(schedule.getTime());
-        }
-        orderResponse.setSchedule(times);
-        return orderResponse;
-    }
-
-    public static OrderResponse orderToResponse(Order order) {
-        return setBodyFromOrder(order);
-    }
-
-    private static OrderResponse setBodyFromOrder(Order order) {
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setNotes(order.getNotes());
-        orderResponse.setOrderedTime(order.getOrderedTime());
-        orderResponse.setOrderNumber(order.getOrderNumber());
-        orderResponse.setOrderStatus(order.getOrderStatus());
-        orderResponse.setPhoneNumber(order.getPhoneNumber());
-        orderResponse.setType(order.getType());
-        orderResponse.setWechatId(order.getWechatId());
-        return orderResponse;
     }
 }

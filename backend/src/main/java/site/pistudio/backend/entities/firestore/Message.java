@@ -12,7 +12,6 @@ public class Message {
     @Id
     Key key;
 
-    private long id;
 
     private MessageSender messageSender;
 
@@ -22,14 +21,6 @@ public class Message {
 
     private long orderNumber;
 
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public MessageSender getMessageSender() {
         return messageSender;

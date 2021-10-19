@@ -10,19 +10,15 @@ import java.time.LocalDateTime;
 public class Schedule {
     @Id
     Key key;
-
-    private long id;
-
     private LocalDateTime time;
-
     private long orderNumber;
 
-    public long getId() {
-        return id;
+    public Key getKey() {
+        return key;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setKey(Key key) {
+        this.key = key;
     }
 
     public LocalDateTime getTime() {

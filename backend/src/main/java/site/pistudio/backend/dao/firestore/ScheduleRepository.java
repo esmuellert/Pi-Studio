@@ -16,7 +16,8 @@ public interface ScheduleRepository extends DatastoreRepository<Schedule, Long> 
 
     void deleteScheduleByOrderNumberAndTimeNotIn(Long orderNumber, List<LocalDateTime> schedules);
 
-    Object findScheduleByOrderNumberAndTime(Long orderNumber, LocalDateTime schedule);
+    Schedule findScheduleByOrderNumberAndTime(Long orderNumber, LocalDateTime schedule);
 
-    Optional<Schedule> findScheduleById(long l);
+    int deleteByOrderNumberAndTimeGreaterThanAndTimeLessThan(long orderNumber, LocalDateTime time, LocalDateTime time2);
+
 }

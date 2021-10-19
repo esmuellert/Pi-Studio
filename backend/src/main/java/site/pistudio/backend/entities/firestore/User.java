@@ -18,7 +18,7 @@ public class User implements Role {
 
     private LocalDateTime registerDate;
     private LocalDateTime tokenExpired;
-    private byte[] tokenSecret;
+    private String tokenSecret;
 
     @Override
     public UUID getId() {
@@ -57,12 +57,12 @@ public class User implements Role {
     }
 
     @Override
-    public byte[] getTokenSecret() {
+    public String getTokenSecret() {
         return tokenSecret;
     }
 
     @Override
-    public void setTokenSecret(byte[] tokenSecret) {
+    public void setTokenSecret(String tokenSecret) {
         this.tokenSecret = tokenSecret;
     }
 }
