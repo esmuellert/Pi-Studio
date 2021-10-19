@@ -33,14 +33,6 @@ public class OrderServiceIntegrationTest {
     }
 
     @Test
-    public void findSchedulesByOrder() {
-        List<Schedule> schedules = scheduleRepository.findSchedulesByOrderNumberOrderByTime(20319204432L);
-        for (Schedule schedule : schedules) {
-            System.out.println(schedule);
-        }
-    }
-
-    @Test
     public void findOrderByOpenId() {
         List<Order> orders = orderRepository.findOrderByOpenId("oMj9c5HpP1mV6zjQ53UobYd22gFY");
         System.out.println(orders);
@@ -48,11 +40,6 @@ public class OrderServiceIntegrationTest {
 
     @Test
     public void deleteSchedule() {
-//        int schedule = scheduleRepository.deleteByOrderNumberAndTimeGreaterThanAndTimeLessThan(21291178795L,
-//                LocalDateTime.parse(
-//                        "2020-12-01T12:32:51"), LocalDateTime.parse(
-//                        "2020-12-01T12:32:51"));
-
         scheduleRepository.performTransaction(transactionRepository -> {
             List<Schedule> schedules =
                     orderRepository.findByOrderNumber(21291178795L).getSchedules().stream()

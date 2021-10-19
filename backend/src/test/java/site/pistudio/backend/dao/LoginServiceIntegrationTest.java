@@ -57,7 +57,7 @@ public class LoginServiceIntegrationTest {
 
     @Test
     public void addAdmin() {
-        Admin admin =  adminRepository.findOneByUsername("yanuo");
+        Admin admin =  adminRepository.findByUsername("yanuo");
         if (admin == null) {
             Admin yanuo = new Admin();
             yanuo.setUsername("yanuo");
