@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import site.pistudio.backend.entities.firestore.Image;
 import site.pistudio.backend.exceptions.InvalidTokenException;
-import site.pistudio.backend.services.AWSS3Service;
 import site.pistudio.backend.services.ImageService;
 import site.pistudio.backend.services.VerifyTokenService;
 
@@ -16,13 +15,10 @@ import java.util.UUID;
 public class ImageController {
     private final ImageService imageService;
     private final VerifyTokenService verifyTokenService;
-    private final AWSS3Service s3Service;
     public ImageController(ImageService imageService,
-                           VerifyTokenService verifyTokenService, AWSS3Service s3Service) {
+                           VerifyTokenService verifyTokenService) {
         this.imageService = imageService;
         this.verifyTokenService = verifyTokenService;
-
-        this.s3Service = s3Service;
     }
 
     @PostMapping
@@ -53,7 +49,6 @@ public class ImageController {
             throw new InvalidTokenException();
         }
         Image image = imageService.deleteImageById(UUID.fromString(imageId));
-        s3Service.deleteImage(imageId + image.getType());
         return image.getOrderNumber();
     }
 
